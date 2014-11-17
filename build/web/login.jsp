@@ -16,35 +16,48 @@
 	if ((username != null) && (userpasswd != null))
         {
             if (username.trim().equals("") || userpasswd.trim().equals("")) {
-		response.sendRedirect("index.htm");
+		response.sendRedirect("index.jsp");
             } 
             else {
-                
-                query = "SELECT * FROM STUDENT WHERE ID = '" +
-                            username + "' AND Pswd = '" + userpasswd  + "'";
+                //Check if is a user
+                query = "SELECT * FROM User U, Person P WHERE U.SSN = P.SSN AND "
+                        + "U.SSN = '" +
+                        username + "' AND P.Password = '" + userpasswd  + "'";
                	java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 		if (rs.next()) {
                     // login success
                     session.setAttribute("login", username);
-                    response.sendRedirect("StudentInformation.jsp");
+                    response.sendRedirect("User.jsp");
 		} 
                 
-                else{
-                        query = "SELECT * FROM Professor WHERE ID = '" +
-                            username + "' AND Pswd = '" + userpasswd  + "'";
+                //If not user, check if is Manager
+                else {
+                        query = "SELECT * FROM Employee E, Person P  WHERE E.SSN = '" +
+                            username + "' AND P.Password = '" + userpasswd  + "'" 
+                            + " AND E.Role='Manager'";
                         rs = DBConnection.ExecQuery(query);
                         if (rs.next()) {
                             session.setAttribute("login", username);
-                            response.sendRedirect("FacultyInformation.jsp");
+                            response.sendRedirect("Manager.jsp");
                         }
                         else {
+                            //check if is a customer representative
+                            query = "SELECT * FROM Employee E, Person P  WHERE E.SSN = '" +
+                            username + "' AND P.Password = '" + userpasswd  + "'" 
+                            + " AND E.Role='CustRep'";
+                            rs = DBConnection.ExecQuery(query);
+                            if (rs.next()) {
+                                session.setAttribute("login", username);
+                                response.sendRedirect("CustRep.jsp");
+                            }
 				// username or password mistake
-                            
+                            else{
                             out.print("Username or Password is not Correct!!!");
                             %>
                             <br/>
                             <a href="index.htm"> Back to login page </a>
                             <%
+                            }
                         }
                     }
 			
