@@ -60,7 +60,8 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="User.jsp">Add, Edit, Delete Employee  <span class="sr-only">(current)</span></a></li>
+            <li class="active"><a href="Manager.jsp">Home <span class="sr-only">(current)</span></a></li>
+            <li><a href="#" onclick="hideTable();" >Add, Edit, Delete Employee </a></li>
             <li><a href="#">Sales Reports</a></li>
             <li><a href="#">List Users</a></li>
             <li><a href="#">List Dates</a></li>
@@ -78,9 +79,9 @@
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
+          <h1 class="page-header">Your Dashboard</h1>
 
-          <div class="row placeholders">
+          <!--<div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
               <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
               <h4>Label</h4>
@@ -101,10 +102,10 @@
               <h4>Label</h4>
               <span class="text-muted">Something else</span>
             </div>
-          </div>
-
-          <h2 class="sub-header">Section title</h2>
-          <div class="table-responsive">
+          </div>-->
+        <div id="mainTable">
+          <h2 class="sub-header"></h2>
+          <div class="table-responsive" >
             <table class="table table-striped">
                 <thead>
                     
@@ -137,6 +138,8 @@
             </table>
           </div>
         </div>
+                
+        </div>
       </div>
     </div>
 
@@ -150,8 +153,10 @@
             
         });
         function showEmp(){ 
+            showTable();
             $("thead").html("");
             $("tbody").html("");
+            $(".sub-header").html("Employee Table")
             $("thead").append("<tr>");
             <% while(empColRs.next()){ %>
                $("thead").append("<th>" + "<%= empColRs.getString("COLUMN_NAME") %>" + "</th>");
@@ -163,8 +168,10 @@
             <% }%>   
         }
         function showUser(){
+            showTable();
             $("thead").html("");
             $("tbody").html("");
+            $(".sub-header").html("User Table");
             $("thead").append("<tr>");
             <% while(userColRs.next()){ %>
                 $("thead").append("<th>" + "<%= userColRs.getString("COLUMN_NAME") %>" + "</th>");
@@ -176,8 +183,10 @@
             <% }%>   
         }
         function showDate(){
+            showTable();
             $("thead").html("");
             $("tbody").html("");
+            $(".sub-header").html("Dates Table");
             $("thead").append("<tr>");
             <% while(dateColRs.next()){ %>
                 $("thead").append("<th>" + "<%= dateColRs.getString("COLUMN_NAME") %>" + "</th>");
@@ -190,6 +199,12 @@
             "<%= dateRs.getString("Comments") %>" + "</td><td>" + "<%= dateRs.getInt("User1Rating") %>" + 
             "</td><td>" + "<%= dateRs.getInt("User2Rating") %>" + "</td></tr>");
             <% }%>   
+        }
+        function hideTable(){
+        $("#mainTable").hide();
+        }
+        function showTable(){
+        $("#mainTable").show();
         }
         </script>
     <script src="../../dist/js/bootstrap.min.js"></script>

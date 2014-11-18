@@ -91,9 +91,9 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        </div>\n");
       out.write("        <div id=\"navbar\" class=\"navbar-collapse collapse\">\n");
       out.write("          <ul class=\"nav navbar-nav navbar-right\">\n");
-      out.write("            <li><a href=\"#\" id=\"emp\" onclick=\"updateEmp();\" >Employee</a></li>\n");
-      out.write("            <li><a href=\"#\">User</a></li>\n");
-      out.write("            <li><a href=\"#\">Date</a></li>\n");
+      out.write("            <li><a href=\"#\" id=\"emp\" onclick=\"showEmp();\" >Employee</a></li>\n");
+      out.write("            <li><a href=\"#\" onclick=\"showUser();\" >User</a></li>\n");
+      out.write("            <li><a href=\"#\" onclick=\"showDate()\">Date</a></li>\n");
       out.write("          </ul>\n");
       out.write("          <form class=\"navbar-form navbar-right\">\n");
       out.write("            <input type=\"text\" class=\"form-control\" placeholder=\"Search...\">\n");
@@ -106,7 +106,8 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("      <div class=\"row\">\n");
       out.write("        <div class=\"col-sm-3 col-md-2 sidebar\">\n");
       out.write("          <ul class=\"nav nav-sidebar\">\n");
-      out.write("            <li class=\"active\"><a href=\"User.jsp\">Add, Edit, Delete Employee  <span class=\"sr-only\">(current)</span></a></li>\n");
+      out.write("            <li class=\"active\"><a href=\"Manager.jsp\">Home <span class=\"sr-only\">(current)</span></a></li>\n");
+      out.write("            <li><a href=\"#\" onclick=\"hideTable();\" >Add, Edit, Delete Employee </a></li>\n");
       out.write("            <li><a href=\"#\">Sales Reports</a></li>\n");
       out.write("            <li><a href=\"#\">List Users</a></li>\n");
       out.write("            <li><a href=\"#\">List Dates</a></li>\n");
@@ -124,9 +125,9 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("          </ul>\n");
       out.write("        </div>\n");
       out.write("        <div class=\"col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main\">\n");
-      out.write("          <h1 class=\"page-header\">Dashboard</h1>\n");
+      out.write("          <h1 class=\"page-header\">Your Dashboard</h1>\n");
       out.write("\n");
-      out.write("          <div class=\"row placeholders\">\n");
+      out.write("          <!--<div class=\"row placeholders\">\n");
       out.write("            <div class=\"col-xs-6 col-sm-3 placeholder\">\n");
       out.write("              <img data-src=\"holder.js/200x200/auto/sky\" class=\"img-responsive\" alt=\"Generic placeholder thumbnail\">\n");
       out.write("              <h4>Label</h4>\n");
@@ -147,10 +148,10 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("              <h4>Label</h4>\n");
       out.write("              <span class=\"text-muted\">Something else</span>\n");
       out.write("            </div>\n");
-      out.write("          </div>\n");
-      out.write("\n");
-      out.write("          <h2 class=\"sub-header\">Section title</h2>\n");
-      out.write("          <div class=\"table-responsive\">\n");
+      out.write("          </div>-->\n");
+      out.write("        <div id=\"mainTable?>\n");
+      out.write("          <h2 class=\"sub-header\"></h2>\n");
+      out.write("          <div class=\"table-responsive\" >\n");
       out.write("            <table class=\"table table-striped\">\n");
       out.write("                <thead>\n");
       out.write("                    \n");
@@ -172,11 +173,20 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
                         + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='User';";
                 java.sql.ResultSet userColRs = DBConnection.ExecQuery(getUserColQuery);
                 
+                String getDateQuery = "SELECT * FROM Date";
+                java.sql.ResultSet dateRs = DBConnection.ExecQuery(getDateQuery);
+                
+                String getDateColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
+                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Date';";
+                java.sql.ResultSet dateColRs = DBConnection.ExecQuery(getDateColQuery);
+                
       out.write("\n");
       out.write("                \n");
       out.write("              </tbody>\n");
       out.write("            </table>\n");
       out.write("          </div>\n");
+      out.write("        </div>\n");
+      out.write("                \n");
       out.write("        </div>\n");
       out.write("      </div>\n");
       out.write("    </div>\n");
@@ -190,9 +200,11 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        $(document).ready(function(){\n");
       out.write("            \n");
       out.write("        });\n");
-      out.write("        function updateEmp(){ \n");
+      out.write("        function showEmp(){ \n");
+      out.write("            \n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("            $(\".sub-header\").html(\"Employee Table\")\n");
       out.write("            $(\"thead\").append(\"<tr>\");\n");
       out.write("            ");
  while(empColRs.next()){ 
@@ -221,9 +233,10 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
  }
       out.write("   \n");
       out.write("        }\n");
-      out.write("        function updateUser(){\n");
+      out.write("        function showUser(){\n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("            $(\".sub-header\").html(\"User Table\");\n");
       out.write("            $(\"thead\").append(\"<tr>\");\n");
       out.write("            ");
  while(userColRs.next()){ 
@@ -252,6 +265,52 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
  }
       out.write("   \n");
       out.write("        }\n");
+      out.write("        function showDate(){\n");
+      out.write("            $(\"thead\").html(\"\");\n");
+      out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("            $(\".sub-header\").html(\"Dates Table\");\n");
+      out.write("            $(\"thead\").append(\"<tr>\");\n");
+      out.write("            ");
+ while(dateColRs.next()){ 
+      out.write("\n");
+      out.write("                $(\"thead\").append(\"<th>\" + \"");
+      out.print( dateColRs.getString("COLUMN_NAME") );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
+      out.write("                $(\"thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(dateRs.next()){ 
+      out.write("    \n");
+      out.write("                $(\"tbody\").append(\"<tr><td>\" + \"");
+      out.print( dateRs.getString("Profile1") );
+      out.write("\" + \"</td><td>\"+\"");
+      out.print( dateRs.getString("Profile2") );
+      out.write("\"\n");
+      out.write("            +\"</td><td>\" + \"");
+      out.print( dateRs.getString("CustRep") );
+      out.write("\"+\"</td><td>\" + \"");
+      out.print( dateRs.getDate("Date_Time") );
+      out.write("\" + \"</td><td>\" \n");
+      out.write("            + \"");
+      out.print( dateRs.getString("Location") );
+      out.write("\" + \"</td><td>\" + \"");
+      out.print( dateRs.getFloat("BookingFee") );
+      out.write("\" + \"</td><td>\" +\n");
+      out.write("            \"");
+      out.print( dateRs.getString("Comments") );
+      out.write("\" + \"</td><td>\" + \"");
+      out.print( dateRs.getInt("User1Rating") );
+      out.write("\" + \n");
+      out.write("            \"</td><td>\" + \"");
+      out.print( dateRs.getInt("User2Rating") );
+      out.write("\" + \"</td></tr>\");\n");
+      out.write("            ");
+ }
+      out.write("   \n");
+      out.write("        }\n");
+      out.write("        $(\"#mainTable\").hide();\n");
       out.write("        </script>\n");
       out.write("    <script src=\"../../dist/js/bootstrap.min.js\"></script>\n");
       out.write("    <script src=\"../../assets/js/docs.min.js\"></script>\n");
