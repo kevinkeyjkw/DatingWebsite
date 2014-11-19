@@ -55,29 +55,21 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n");
       out.write("    <meta name=\"description\" content=\"\">\n");
       out.write("    <meta name=\"author\" content=\"\">\n");
-      out.write("    <link rel=\"icon\" href=\"../../favicon.ico\">\n");
+      out.write("    \n");
       out.write("\n");
       out.write("    <title>Dashboard Template for Bootstrap</title>\n");
-      out.write("\n");
       out.write("    <!-- Bootstrap core CSS -->\n");
+      out.write("    \n");
       out.write("    <link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">\n");
-      out.write("\n");
       out.write("    <!-- Custom styles for this template -->\n");
       out.write("    <link href=\"css/dashboard.css\" rel=\"stylesheet\">\n");
       out.write("\n");
       out.write("    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->\n");
       out.write("    <!--[if lt IE 9]><script src=\"../../assets/js/ie8-responsive-file-warning.js\"></script><![endif]-->\n");
-      out.write("    <script src=\"../../assets/js/ie-emulation-modes-warning.js\"></script>\n");
-      out.write("\n");
-      out.write("    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->\n");
-      out.write("    <!--[if lt IE 9]>\n");
-      out.write("      <script src=\"https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js\"></script>\n");
-      out.write("      <script src=\"https://oss.maxcdn.com/respond/1.4.2/respond.min.js\"></script>\n");
-      out.write("    <![endif]-->\n");
+      out.write("    \n");
       out.write("  </head>\n");
       out.write("\n");
       out.write("  <body>\n");
-      out.write("\n");
       out.write("    <nav class=\"navbar navbar-inverse navbar-fixed-top\" role=\"navigation\">\n");
       out.write("      <div class=\"container-fluid\">\n");
       out.write("        <div class=\"navbar-header\">\n");
@@ -107,119 +99,136 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <div class=\"col-sm-3 col-md-2 sidebar\">\n");
       out.write("          <ul class=\"nav nav-sidebar\">\n");
       out.write("            <li class=\"active\"><a href=\"Manager.jsp\">Home <span class=\"sr-only\">(current)</span></a></li>\n");
-      out.write("            <li><a href=\"#\" onclick=\"hideTable();\" >Add, Edit, Delete Employee </a></li>\n");
-      out.write("            <li><a href=\"#\">Sales Reports</a></li>\n");
-      out.write("            <li><a href=\"#\">List Users</a></li>\n");
-      out.write("            <li><a href=\"#\">List Dates</a></li>\n");
-      out.write("          </ul>\n");
-      out.write("          <ul class=\"nav nav-sidebar\">\n");
-      out.write("            \n");
+      out.write("            <li><a href=\"#\" >Add, Edit, Delete Employee </a></li>\n");
+      out.write("            <li onclick=\"showSalesReport();\"><a href=\"#\">Sales Reports</a></li>\n");
       out.write("            <li><a href=\"\">Revenue from Dates by Customer</a></li>\n");
       out.write("            <li><a href=\"\">Most revenue customer</a></li>\n");
       out.write("            <li><a href=\"\">Most active customers</a></li>\n");
       out.write("            <li><a href=\"\">Who dated who?</a></li>\n");
-      out.write("          </ul>\n");
-      out.write("          <ul class=\"nav nav-sidebar\">\n");
       out.write("            <li><a href=\"\">Highest-rated customers</a></li>\n");
       out.write("            <li><a href=\"\">Best days to have a date</a></li>\n");
       out.write("          </ul>\n");
       out.write("        </div>\n");
       out.write("        <div class=\"col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main\">\n");
-      out.write("          <h1 class=\"page-header\">Your Dashboard</h1>\n");
-      out.write("\n");
-      out.write("          <!--<div class=\"row placeholders\">\n");
-      out.write("            <div class=\"col-xs-6 col-sm-3 placeholder\">\n");
-      out.write("              <img data-src=\"holder.js/200x200/auto/sky\" class=\"img-responsive\" alt=\"Generic placeholder thumbnail\">\n");
-      out.write("              <h4>Label</h4>\n");
-      out.write("              <span class=\"text-muted\">Something else</span>\n");
-      out.write("            </div>\n");
-      out.write("            <div class=\"col-xs-6 col-sm-3 placeholder\">\n");
-      out.write("              <img data-src=\"holder.js/200x200/auto/vine\" class=\"img-responsive\" alt=\"Generic placeholder thumbnail\">\n");
-      out.write("              <h4>Label</h4>\n");
-      out.write("              <span class=\"text-muted\">Something else</span>\n");
-      out.write("            </div>\n");
-      out.write("            <div class=\"col-xs-6 col-sm-3 placeholder\">\n");
-      out.write("              <img data-src=\"holder.js/200x200/auto/sky\" class=\"img-responsive\" alt=\"Generic placeholder thumbnail\">\n");
-      out.write("              <h4>Label</h4>\n");
-      out.write("              <span class=\"text-muted\">Something else</span>\n");
-      out.write("            </div>\n");
-      out.write("            <div class=\"col-xs-6 col-sm-3 placeholder\">\n");
-      out.write("              <img data-src=\"holder.js/200x200/auto/vine\" class=\"img-responsive\" alt=\"Generic placeholder thumbnail\">\n");
-      out.write("              <h4>Label</h4>\n");
-      out.write("              <span class=\"text-muted\">Something else</span>\n");
-      out.write("            </div>\n");
-      out.write("          </div>-->\n");
-      out.write("        <div id=\"mainTable?>\n");
+      out.write("          <h1 class=\"page-header\" id=\"title\">Your Dashboard</h1>\n");
+      out.write("          \n");
+      out.write("          <div class=\"playArea\">\n");
+      out.write("          <div id=\"salesReport\" class=\"hidden\">\n");
+      out.write("              <div id=\"salesReportA\">\n");
+      out.write("                  <form action=\"salesReport.jsp\">\n");
+      out.write("          <select name=\"month\" class=\"dropdown\">\n");
+      out.write("            <option value=\"1\">1</option>\n");
+      out.write("            <option value=\"2\">2</option>\n");
+      out.write("            <option value=\"3\">3</option>\n");
+      out.write("            <option value=\"4\">4</option>\n");
+      out.write("            <option value=\"5\">5</option>\n");
+      out.write("            <option value=\"6\">6</option>\n");
+      out.write("            <option value=\"7\">7</option>\n");
+      out.write("            <option value=\"8\">8</option>\n");
+      out.write("            <option value=\"9\">9</option>\n");
+      out.write("            <option value=\"10\">10</option>\n");
+      out.write("            <option value=\"11\">11</option>\n");
+      out.write("            <option value=\"12\">12</option>\n");
+      out.write("            </select>\n");
+      out.write("              <select name=\"year\" class=\"dropdown\">\n");
+      out.write("                  <option value=\"2011\">2011</option>\n");
+      out.write("            <option value=\"2012\">2012</option>\n");
+      out.write("            <option value=\"2013\">2013</option>\n");
+      out.write("            <option value=\"2014\">2014</option>\n");
+      out.write("              </select>\n");
+      out.write("              <button type=\"submit\" class=\"btn btn-default\">Obtain Report</button>\n");
+      out.write("              </form>\n");
+      out.write("              </div>\n");
+      out.write("              <div id=\"salesReportB\">\n");
+      out.write("                  \n");
+      out.write("              </div>\n");
+      out.write("            </div>  \n");
+      out.write("              \n");
+      out.write("          </div>\n");
+      out.write("        <div id=\"mainTable\">\n");
+      out.write("          \n");
+      out.write("            \n");
       out.write("          <h2 class=\"sub-header\"></h2>\n");
       out.write("          <div class=\"table-responsive\" >\n");
       out.write("            <table class=\"table table-striped\">\n");
-      out.write("                <thead>\n");
-      out.write("                    \n");
+      out.write("                <thead>                    \n");
       out.write("                </thead>\n");
       out.write("              <tbody id=\"bodyemp\">\n");
-      out.write("                ");
- 
-                String getEmpQuery = "SELECT * FROM Employee";
-                java.sql.ResultSet empRs = DBConnection.ExecQuery(getEmpQuery);
-                
-                String getEmpColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Employee';";
-                java.sql.ResultSet empColRs = DBConnection.ExecQuery(getEmpColQuery);
-                
-                String getUserQuery = "SELECT * FROM User";
-                java.sql.ResultSet userRs = DBConnection.ExecQuery(getUserQuery);
-                
-                String getUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='User';";
-                java.sql.ResultSet userColRs = DBConnection.ExecQuery(getUserColQuery);
-                
-                String getDateQuery = "SELECT * FROM Date";
-                java.sql.ResultSet dateRs = DBConnection.ExecQuery(getDateQuery);
-                
-                String getDateColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Date';";
-                java.sql.ResultSet dateColRs = DBConnection.ExecQuery(getDateColQuery);
-                
-      out.write("\n");
+      out.write("               \n");
       out.write("                \n");
       out.write("              </tbody>\n");
       out.write("            </table>\n");
       out.write("          </div>\n");
       out.write("        </div>\n");
-      out.write("                \n");
+      out.write("               \n");
       out.write("        </div>\n");
       out.write("      </div>\n");
       out.write("    </div>\n");
+      out.write("       \n");
       out.write("\n");
       out.write("    <!-- Bootstrap core JavaScript\n");
       out.write("    ================================================== -->\n");
       out.write("    <!-- Placed at the end of the document so the pages load faster -->\n");
+      out.write("    \n");
       out.write("    <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js\"></script>\n");
+      out.write("    <script href=\"js/bootstrap.min.js\" ></script>\n");
       out.write("    \n");
       out.write("    <script type=\"text/javascript\" language=\"javascript\">\n");
       out.write("        $(document).ready(function(){\n");
-      out.write("            \n");
+      out.write("            $('.nav.nav-sidebar li').click(function(){\n");
+      out.write("                $('.nav.nav-sidebar li').removeClass('active');\n");
+      out.write("                $(this).toggleClass('active');\n");
+      out.write("                \n");
+      out.write("            });\n");
+      out.write("            $('.nav.nav-sidebar li a').click(function(){\n");
+      out.write("                hideTable();\n");
+      out.write("                hideSalesReport();\n");
+      out.write("            });\n");
       out.write("        });\n");
-      out.write("        function showEmp(){ \n");
+      out.write("        function obtainSalesReport(){\n");
+      out.write("         \n");
       out.write("            \n");
-      out.write("            $(\"thead\").html(\"\");\n");
-      out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("        }\n");
+      out.write("        \n");
+      out.write("        function showSalesReport(){\n");
+      out.write("            $(\"#title\").html(\"Monthly Sales Report\");\n");
+      out.write("            $(\"#salesReport\").removeClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function hideSalesReport(){\n");
+      out.write("            $(\"#title\").html(\"\");\n");
+      out.write("            $(\"#salesReport\").addClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function showEmp(){ \n");
+      out.write("            showTable();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            ");
+
+            String getEmpQuery = "SELECT * FROM Employee";
+                java.sql.ResultSet empRs = DBConnection.ExecQuery(getEmpQuery);
+                
+                String getEmpColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
+                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Employee';";
+                java.sql.ResultSet empColRs = DBConnection.ExecQuery(getEmpColQuery);
+            
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
       out.write("            $(\".sub-header\").html(\"Employee Table\")\n");
-      out.write("            $(\"thead\").append(\"<tr>\");\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
       out.write("            ");
  while(empColRs.next()){ 
       out.write("\n");
-      out.write("               $(\"thead\").append(\"<th>\" + \"");
+      out.write("               $(\"#mainTable thead\").append(\"<th>\" + \"");
       out.print( empColRs.getString("COLUMN_NAME") );
       out.write("\" + \"</th>\");\n");
       out.write("            ");
  } 
       out.write("\n");
-      out.write("                $(\"thead\").append(\"</tr>\");\n");
+      out.write("                $(\"#mainTable thead\").append(\"</tr>\");\n");
       out.write("            ");
  while(empRs.next()){ 
       out.write("    \n");
-      out.write("                $(\"tbody\").append(\"<tr><td>\" + \"");
+      out.write("                $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
       out.print( empRs.getString("SSN") );
       out.write("\" + \"</td><td>\"+\"");
       out.print( empRs.getString("Role") );
@@ -234,8 +243,20 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("   \n");
       out.write("        }\n");
       out.write("        function showUser(){\n");
+      out.write("            showTable();\n");
+      out.write("            hideSalesReport();\n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("            ");
+
+             String getUserQuery = "SELECT * FROM User";
+                java.sql.ResultSet userRs = DBConnection.ExecQuery(getUserQuery);
+                
+                String getUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
+                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='User';";
+                java.sql.ResultSet userColRs = DBConnection.ExecQuery(getUserColQuery);
+            
+      out.write("\n");
       out.write("            $(\".sub-header\").html(\"User Table\");\n");
       out.write("            $(\"thead\").append(\"<tr>\");\n");
       out.write("            ");
@@ -266,8 +287,20 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("   \n");
       out.write("        }\n");
       out.write("        function showDate(){\n");
+      out.write("            showTable();\n");
+      out.write("            hideSalesReport();\n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");
+      out.write("            ");
+
+            String getDateQuery = "SELECT * FROM Date";
+                java.sql.ResultSet dateRs = DBConnection.ExecQuery(getDateQuery);
+                
+                String getDateColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
+                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Date';";
+                java.sql.ResultSet dateColRs = DBConnection.ExecQuery(getDateColQuery);
+            
+      out.write("\n");
       out.write("            $(\".sub-header\").html(\"Dates Table\");\n");
       out.write("            $(\"thead\").append(\"<tr>\");\n");
       out.write("            ");
@@ -310,12 +343,20 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
  }
       out.write("   \n");
       out.write("        }\n");
+      out.write("        function hideTable(){\n");
       out.write("        $(\"#mainTable\").hide();\n");
+      out.write("        }\n");
+      out.write("        function showTable(){\n");
+      out.write("        $(\"#mainTable\").show();\n");
+      out.write("        }\n");
+      out.write("        \n");
       out.write("        </script>\n");
-      out.write("    <script src=\"../../dist/js/bootstrap.min.js\"></script>\n");
-      out.write("    <script src=\"../../assets/js/docs.min.js\"></script>\n");
+      out.write("<!--    <script src=\"../../dist/js/bootstrap.min.js\"></script>\n");
+      out.write("    \n");
+      out.write("    <script src=\"../../assets/js/docs.min.js\"></script>-->\n");
       out.write("    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->\n");
       out.write("    <script src=\"../../assets/js/ie10-viewport-bug-workaround.js\"></script>\n");
+      out.write("    \n");
       out.write("  </body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {
