@@ -35,7 +35,9 @@ FOREIGN KEY (SSN) REFERENCES Person(SSN) ON DELETE CASCADE
 );
 CREATE TABLE Profile 
 (
-ProfileID CHAR(20),OwnerSSN CHAR(11),
+ProfileID CHAR(20),
+OwnerSSN CHAR(11),
+Age INT,
 DatingAgeRangeStart INT,
 DatingAgeRangeEnd INT,
 DatinGeoRange INT,
@@ -49,6 +51,7 @@ LastModDate DATETIME NOT NULL,
 PRIMARY KEY (ProfileID),
 FOREIGN KEY (OwnerSSN) REFERENCES User(SSN) ON DELETE CASCADE
 );
+
 CREATE TABLE Dates
 (
 Profile1 CHAR(20),

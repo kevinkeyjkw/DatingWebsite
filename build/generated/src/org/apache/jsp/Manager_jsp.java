@@ -101,12 +101,12 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            <li class=\"active\"><a href=\"Manager.jsp\">Home <span class=\"sr-only\">(current)</span></a></li>\n");
       out.write("            <li><a href=\"#\" >Add, Edit, Delete Employee </a></li>\n");
       out.write("            <li onclick=\"showSalesReport();\"><a href=\"#\">Sales Reports</a></li>\n");
-      out.write("            <li><a href=\"\">Revenue from Dates by Customer</a></li>\n");
-      out.write("            <li><a href=\"\">Most revenue customer</a></li>\n");
-      out.write("            <li><a href=\"\">Most active customers</a></li>\n");
-      out.write("            <li><a href=\"\">Who dated who?</a></li>\n");
-      out.write("            <li><a href=\"\">Highest-rated customers</a></li>\n");
-      out.write("            <li><a href=\"\">Best days to have a date</a></li>\n");
+      out.write("            <li onclick=\"showCustRevByDate();\"><a href=\"#\">Revenue from Dates by Customer</a></li>\n");
+      out.write("            <li onclick=\"showCustTotalRev();\"><a href=\"#\">Most revenue customer</a></li>\n");
+      out.write("            <li><a href=\"#\">Most active customers</a></li>\n");
+      out.write("            <li><a href=\"#\">Who dated who?</a></li>\n");
+      out.write("            <li><a href=\"#\">Highest-rated customers</a></li>\n");
+      out.write("            <li><a href=\"#\">Best days to have a date</a></li>\n");
       out.write("          </ul>\n");
       out.write("        </div>\n");
       out.write("        <div class=\"col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main\">\n");
@@ -185,11 +185,98 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                hideSalesReport();\n");
       out.write("            });\n");
       out.write("        });\n");
+      out.write("        \n");
       out.write("        function obtainSalesReport(){\n");
       out.write("         \n");
       out.write("            \n");
       out.write("        }\n");
-      out.write("        \n");
+      out.write("        function showCustTotalRev(){\n");
+      out.write("            showTable();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+            String getCustTotalRevQuery = "SELECT U.SSN, CASE U.PPP"
+                    + " WHEN 'Super-User' THEN SUM(D.BookingFee)+100"
+                    + " WHEN 'Good-User' THEN SUM(D.BookingFee)+50"
+                    + " WHEN 'User-User' THEN SUM(D.BookingFee)"
+                    + " END AS TotalRevenue"
+                    + " FROM User U, Profile P, Date D"
+                    + " WHERE U.SSN = P.OwnerSSN"
+                    + " AND (P.ProfileID = D.Profile1 OR P.ProfileID = D.Profile2)"
+                    + " GROUP BY U.SSN";
+            java.sql.ResultSet custTotalRevRs = DBConnection.ExecQuery(getCustTotalRevQuery);
+            String[] custTotalRevCol = {"SSN", "TotalRevenue"};
+            
+      out.write("\n");
+      out.write("             $(\".sub-header\").html(\"Total Revenue from Customers\");\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("            \n");
+      out.write("            ");
+ for(String tmp: custTotalRevCol){ 
+      out.write("\n");
+      out.write("               $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( tmp );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
+      out.write("                $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(custTotalRevRs.next()){ 
+      out.write("    \n");
+      out.write("                $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( custTotalRevRs.getString("SSN") );
+      out.write("\" + \"</td><td>\"\n");
+      out.write("                        +\"");
+      out.print( custTotalRevRs.getFloat("TotalRevenue") );
+      out.write("\"+\"</td></tr>\");\n");
+      out.write("            ");
+ }
+      out.write("   \n");
+      out.write("    \n");
+      out.write("        }\n");
+      out.write("        function showCustRevByDate(){\n");
+      out.write("            showTable();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+            String getCustRevDateQuery = "SELECT U.SSN, SUM(D.BookingFee)"
+                    + " FROM User U, Profile P, Date D"
+                    + " WHERE U.SSN = P.OwnerSSN"
+                    + " AND (P.ProfileID = D.Profile1 OR P.ProfileID = D.Profile2)"
+                    + " GROUP BY U.SSN"
+                    + " ORDER BY SUM(D.BookingFee) DESC";
+                java.sql.ResultSet custRevDateRs = DBConnection.ExecQuery(getCustRevDateQuery);
+                String [] custRevDateColName = {"SSN","Date Revenue"};
+            
+      out.write("\n");
+      out.write("            $(\".sub-header\").html(\"Revenue from Customer Dates Table\");\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("            ");
+ for(String tmp: custRevDateColName){ 
+      out.write("\n");
+      out.write("               $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( tmp );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
+      out.write("                $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(custRevDateRs.next()){ 
+      out.write("    \n");
+      out.write("                $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( custRevDateRs.getString("SSN") );
+      out.write("\" + \"</td><td>\"\n");
+      out.write("                        +\"");
+      out.print( custRevDateRs.getFloat("SUM(D.BookingFee)") );
+      out.write("\"+\"</td></tr>\");\n");
+      out.write("            ");
+ }
+      out.write("   \n");
+      out.write("        }\n");
       out.write("        function showSalesReport(){\n");
       out.write("            $(\"#title\").html(\"Monthly Sales Report\");\n");
       out.write("            $(\"#salesReport\").removeClass('hidden');\n");
@@ -213,7 +300,7 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("            $(\"#mainTable thead\").html(\"\");\n");
       out.write("            $(\"#mainTable tbody\").html(\"\");\n");
-      out.write("            $(\".sub-header\").html(\"Employee Table\")\n");
+      out.write("            $(\".sub-header\").html(\"Employee Table\");\n");
       out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
       out.write("            ");
  while(empColRs.next()){ 

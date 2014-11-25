@@ -55,12 +55,12 @@
             <li class="active"><a href="Manager.jsp">Home <span class="sr-only">(current)</span></a></li>
             <li><a href="#" >Add, Edit, Delete Employee </a></li>
             <li onclick="showSalesReport();"><a href="#">Sales Reports</a></li>
-            <li><a href="">Revenue from Dates by Customer</a></li>
-            <li><a href="">Most revenue customer</a></li>
-            <li><a href="">Most active customers</a></li>
-            <li><a href="">Who dated who?</a></li>
-            <li><a href="">Highest-rated customers</a></li>
-            <li><a href="">Best days to have a date</a></li>
+            <li onclick="showCustRevByDate();"><a href="#">Revenue from Dates by Customer</a></li>
+            <li onclick="showCustTotalRev();"><a href="#">Most revenue customer</a></li>
+            <li><a href="#">Most active customers</a></li>
+            <li><a href="#">Who dated who?</a></li>
+            <li><a href="#">Highest-rated customers</a></li>
+            <li><a href="#">Best days to have a date</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -139,11 +139,68 @@
                 hideSalesReport();
             });
         });
+        
         function obtainSalesReport(){
          
             
         }
-        
+        function showCustTotalRev(){
+            showTable();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+            String getCustTotalRevQuery = "SELECT U.SSN, U.PPP, CASE U.PPP"
+                    + " WHEN 'Super-User' THEN SUM(D.BookingFee)+100"
+                    + " WHEN 'Good-User' THEN SUM(D.BookingFee)+50"
+                    + " WHEN 'User-User' THEN SUM(D.BookingFee)"
+                    + " END AS TotalRevenue"
+                    + " FROM User U, Profile P, Date D"
+                    + " WHERE U.SSN = P.OwnerSSN"
+                    + " AND (P.ProfileID = D.Profile1 OR P.ProfileID = D.Profile2)"
+                    + " GROUP BY U.SSN,U.PPP"
+                    + " ORDER BY TotalRevenue DESC";
+            java.sql.ResultSet custTotalRevRs = DBConnection.ExecQuery(getCustTotalRevQuery);
+            String[] custTotalRevCol = {"SSN", "PPP","TotalRevenue"};
+            %>
+             $(".sub-header").html("Total Revenue from Customers");
+            $("#mainTable thead").append("<tr>");
+            
+            <% for(String tmp: custTotalRevCol){ %>
+               $("#mainTable thead").append("<th>" + "<%= tmp %>" + "</th>");
+            <% } %>
+                $("#mainTable thead").append("</tr>");
+            <% while(custTotalRevRs.next()){ %>    
+                $("#mainTable tbody").append("<tr><td>" + "<%= custTotalRevRs.getString("SSN") %>" + "</td><td>"
+                    +"<%= custTotalRevRs.getString("PPP") %>" + "</td><td>"    
+                    +"<%= custTotalRevRs.getFloat("TotalRevenue") %>"+"</td></tr>");
+            <% }%>   
+    
+        }
+        function showCustRevByDate(){
+            showTable();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+            String getCustRevDateQuery = "SELECT U.SSN, SUM(D.BookingFee)"
+                    + " FROM User U, Profile P, Date D"
+                    + " WHERE U.SSN = P.OwnerSSN"
+                    + " AND (P.ProfileID = D.Profile1 OR P.ProfileID = D.Profile2)"
+                    + " GROUP BY U.SSN"
+                    + " ORDER BY SUM(D.BookingFee) DESC";
+                java.sql.ResultSet custRevDateRs = DBConnection.ExecQuery(getCustRevDateQuery);
+                String [] custRevDateColName = {"SSN","Date Revenue"};
+            %>
+            $(".sub-header").html("Revenue from Customer Dates Table");
+            $("#mainTable thead").append("<tr>");
+            <% for(String tmp: custRevDateColName){ %>
+               $("#mainTable thead").append("<th>" + "<%= tmp %>" + "</th>");
+            <% } %>
+                $("#mainTable thead").append("</tr>");
+            <% while(custRevDateRs.next()){ %>    
+                $("#mainTable tbody").append("<tr><td>" + "<%= custRevDateRs.getString("SSN") %>" + "</td><td>"
+                        +"<%= custRevDateRs.getFloat("SUM(D.BookingFee)") %>"+"</td></tr>");
+            <% }%>   
+        }
         function showSalesReport(){
             $("#title").html("Monthly Sales Report");
             $("#salesReport").removeClass('hidden');
@@ -165,7 +222,7 @@
             %>
             $("#mainTable thead").html("");
             $("#mainTable tbody").html("");
-            $(".sub-header").html("Employee Table")
+            $(".sub-header").html("Employee Table");
             $("#mainTable thead").append("<tr>");
             <% while(empColRs.next()){ %>
                $("#mainTable thead").append("<th>" + "<%= empColRs.getString("COLUMN_NAME") %>" + "</th>");
