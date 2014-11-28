@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import java.sql.ResultSetMetaData;
 import DBWorks.DBConnection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -47,6 +48,7 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html lang=\"en\">\n");
       out.write("  <head>\n");
@@ -70,6 +72,7 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("  </head>\n");
       out.write("\n");
       out.write("  <body>\n");
+      out.write("\n");
       out.write("    <nav class=\"navbar navbar-inverse navbar-fixed-top\" role=\"navigation\">\n");
       out.write("      <div class=\"container-fluid\">\n");
       out.write("        <div class=\"navbar-header\">\n");
@@ -85,7 +88,7 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("          <ul class=\"nav navbar-nav navbar-right\">\n");
       out.write("            <li><a href=\"#\" id=\"emp\" onclick=\"showEmp();\" >Employee</a></li>\n");
       out.write("            <li><a href=\"#\" onclick=\"showUser();\" >User</a></li>\n");
-      out.write("            <li><a href=\"#\" onclick=\"showDate()\">Date</a></li>\n");
+      out.write("            <li><a  href=\"Date.jsp\" >Date</a></li>\n");
       out.write("          </ul>\n");
       out.write("          <form class=\"navbar-form navbar-right\">\n");
       out.write("            <input type=\"text\" class=\"form-control\" placeholder=\"Search...\">\n");
@@ -93,19 +96,20 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        </div>\n");
       out.write("      </div>\n");
       out.write("    </nav>\n");
-      out.write("\n");
+      out.write("      \n");
       out.write("    <div class=\"container-fluid\">\n");
       out.write("      <div class=\"row\">\n");
       out.write("        <div class=\"col-sm-3 col-md-2 sidebar\">\n");
       out.write("          <ul class=\"nav nav-sidebar\">\n");
       out.write("            <li class=\"active\"><a href=\"Manager.jsp\">Home <span class=\"sr-only\">(current)</span></a></li>\n");
-      out.write("            <li><a href=\"#\" >Add, Edit, Delete Employee </a></li>\n");
+      out.write("            <li><a onclick=\"showAEDEmp();\" href=\"#\" >Add, Edit, Delete Employee </a></li>\n");
       out.write("            <li onclick=\"showSalesReport();\"><a href=\"#\">Sales Reports</a></li>\n");
       out.write("            <li onclick=\"showCustRevByDate();\"><a href=\"#\">Revenue from Dates by Customer</a></li>\n");
       out.write("            <li onclick=\"showCustTotalRev();\"><a href=\"#\">Most revenue customer</a></li>\n");
-      out.write("            <li><a href=\"#\">Most active customers</a></li>\n");
+      out.write("            <li onclick=\"showActiveCust();\"><a href=\"#\">Most active customers</a></li>\n");
+      out.write("            <li onclick=\"showCustRepTotalRev();\"><a href=\"#\">Most Revenue Customer Representative</a></li>\n");
       out.write("            <li><a href=\"#\">Who dated who?</a></li>\n");
-      out.write("            <li><a href=\"#\">Highest-rated customers</a></li>\n");
+      out.write("            <li onclick=\"showHighRateCust();\"><a href=\"#\">Highest-rated customers</a></li>\n");
       out.write("            <li><a href=\"#\">Best days to have a date</a></li>\n");
       out.write("          </ul>\n");
       out.write("        </div>\n");
@@ -113,9 +117,13 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("          <h1 class=\"page-header\" id=\"title\">Your Dashboard</h1>\n");
       out.write("          \n");
       out.write("          <div class=\"playArea\">\n");
-      out.write("          <div id=\"salesReport\" class=\"hidden\">\n");
-      out.write("              <div id=\"salesReportA\">\n");
-      out.write("                  <form action=\"salesReport.jsp\">\n");
+      out.write("              <div id=\"activeUser\" class=\"hidden\">\n");
+      out.write("                  <button type=\"button\" onclick=\"showActiveCustLikes();\" class=\"btn btn-default\" >Based on # of Likes</button>\n");
+      out.write("                  <button type=\"button\" onclick=\"showActiveCustDates();\" class=\"btn btn-default\" >Based on # of Dates</button>\n");
+      out.write("              </div>\n");
+      out.write("       <div id=\"salesReport\" class=\"hidden\">\n");
+      out.write("        <div id=\"salesReportA\">\n");
+      out.write("         <form action=\"salesReport.jsp\">\n");
       out.write("          <select name=\"month\" class=\"dropdown\">\n");
       out.write("            <option value=\"1\">1</option>\n");
       out.write("            <option value=\"2\">2</option>\n");
@@ -142,12 +150,15 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("              <div id=\"salesReportB\">\n");
       out.write("                  \n");
       out.write("              </div>\n");
-      out.write("            </div>  \n");
-      out.write("              \n");
+      out.write("            </div>  <!-- End of get sales report-->\n");
+      out.write("            <div id=\"aedEmp\" class=\"hidden\">\n");
+      out.write("                <a  class=\"btn btn-default\" href=\"AddEmp.jsp\">Add Employee</a>\n");
+      out.write("                <a  class=\"btn btn-default\" href=\"EditEmp.jsp\">Edit Employee</a>\n");
+      out.write("                <a  class=\"btn btn-default\" href=\"DeleteEmp.jsp\">Delete Employee</a>\n");
+      out.write("            </div>\n");
       out.write("          </div>\n");
-      out.write("        <div id=\"mainTable\">\n");
       out.write("          \n");
-      out.write("            \n");
+      out.write("        <div id=\"mainTable\">\n");
       out.write("          <h2 class=\"sub-header\"></h2>\n");
       out.write("          <div class=\"table-responsive\" >\n");
       out.write("            <table class=\"table table-striped\">\n");
@@ -155,7 +166,6 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                </thead>\n");
       out.write("              <tbody id=\"bodyemp\">\n");
       out.write("               \n");
-      out.write("                \n");
       out.write("              </tbody>\n");
       out.write("            </table>\n");
       out.write("          </div>\n");
@@ -164,7 +174,6 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        </div>\n");
       out.write("      </div>\n");
       out.write("    </div>\n");
-      out.write("       \n");
       out.write("\n");
       out.write("    <!-- Bootstrap core JavaScript\n");
       out.write("    ================================================== -->\n");
@@ -182,21 +191,229 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            });\n");
       out.write("            $('.nav.nav-sidebar li a').click(function(){\n");
       out.write("                hideTable();\n");
-      out.write("                hideSalesReport();\n");
       out.write("            });\n");
       out.write("        });\n");
-      out.write("        \n");
-      out.write("        function obtainSalesReport(){\n");
-      out.write("         \n");
-      out.write("            \n");
+      out.write("        function showHighRateCust(){\n");
+      out.write("            showTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+            String highRateCustQuery = "SELECT * FROM User"
+                    + " WHERE Rating > 2"
+                    + " ORDER BY Rating DESC";
+            ResultSet highRateCustRs = DBConnection.ExecQuery(highRateCustQuery);
+             ResultSetMetaData highRateCustMd = highRateCustRs.getMetaData();
+            
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("            ");
+ for(int k=1;k<highRateCustMd.getColumnCount()+1;k++){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( highRateCustMd.getColumnLabel(k) );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ }
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(highRateCustRs.next()){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( highRateCustRs.getString("CustRep") );
+      out.write("\" \n");
+      out.write("            + \"</td><td>\" + \"");
+      out.print( highRateCustRs.getFloat("TotalRevenue") );
+      out.write("\" \n");
+      out.write("            + \"</td><td>\"+ \"");
+      out.print( highRateCustRs.getInt("NumDateTransactions") );
+      out.write("\" +\"</td></tr>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
       out.write("        }\n");
-      out.write("        function showCustTotalRev(){\n");
+      out.write("        function showCustRepTotalRev(){\n");
+      out.write("            showTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+             String activeCustRepQuery = "SELECT D.CustRep, SUM(D.BookingFee) AS TotalRevenue,COUNT(D.CustRep) AS NumDateTransactions"
+                     + " FROM Date D"
+                     + " GROUP BY D.CustRep"
+                     + " ORDER BY TotalRevenue DESC"
+                     ;
+             ResultSet activeCustRepRs = DBConnection.ExecQuery(activeCustRepQuery);
+             ResultSetMetaData activeCustRepMd = activeCustRepRs.getMetaData();
+             
+            
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("            ");
+ for(int k=1;k<activeCustRepMd.getColumnCount()+1;k++){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( activeCustRepMd.getColumnLabel(k) );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ }
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(activeCustRepRs.next()){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( activeCustRepRs.getString("CustRep") );
+      out.write("\" \n");
+      out.write("            + \"</td><td>\" + \"");
+      out.print( activeCustRepRs.getFloat("TotalRevenue") );
+      out.write("\" \n");
+      out.write("            + \"</td><td>\"+ \"");
+      out.print( activeCustRepRs.getInt("NumDateTransactions") );
+      out.write("\" +\"</td></tr>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
+      out.write("        }\n");
+      out.write("        function showActiveCustLikes(){\n");
       out.write("            showTable();\n");
       out.write("            $(\"#mainTable thead\").html(\"\");\n");
       out.write("            $(\"#mainTable tbody\").html(\"\");\n");
       out.write("            ");
 
-            String getCustTotalRevQuery = "SELECT U.SSN, CASE U.PPP"
+                String activeCustLikeQuery = "SELECT P.OwnerSSN,COUNT(P.OwnerSSN) AS NumOfLikes "
+                        + " FROM Profile P,Likes L"
+                        + " WHERE P.ProfileID=L.Liker"
+                        + " GROUP BY P.OwnerSSN"
+                        + " HAVING COUNT(P.OwnerSSN) >= 2"
+                        + " ORDER BY NumOfLikes DESC";
+                ResultSet activeCustLikeRs = DBConnection.ExecQuery(activeCustLikeQuery);
+                ResultSetMetaData activeCustLikeMd = activeCustLikeRs.getMetaData();
+                
+            
+      out.write("\n");
+      out.write("                    \n");
+      out.write("                    $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("                    ");
+ for(int k=1;k<activeCustLikeMd.getColumnCount()+1;k++){ 
+      out.write("\n");
+      out.write("                        $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( activeCustLikeMd.getColumnLabel(k) );
+      out.write("\" + \"</th>\");\n");
+      out.write("                        ");
+ }
+      out.write("\n");
+      out.write("                    $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("                    ");
+ while(activeCustLikeRs.next()){ 
+      out.write("\n");
+      out.write("                        $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( activeCustLikeRs.getString("OwnerSSN") );
+      out.write("\" \n");
+      out.write("                              + \"</td><td>\" + \"");
+      out.print( activeCustLikeRs.getInt("NumOfLikes") );
+      out.write("\" + \"</td></tr>\");\n");
+      out.write("                    ");
+ } 
+      out.write("\n");
+      out.write("                    \n");
+      out.write("                    \n");
+      out.write("        }\n");
+      out.write("        function showActiveCustDates(){\n");
+      out.write("            showTable();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+             String activeCustDateQuery = "SELECT U.SSN,COUNT(U.SSN) AS NumOfDates"
+                     + " FROM User U,Profile P,Date D"
+                     + " WHERE P.OwnerSSN=U.SSN AND (P.ProfileID=D.Profile1 OR P.ProfileID=D.Profile2)"
+                     + " GROUP BY U.SSN"
+                     + " HAVING COUNT(NumOfDates) >= 2"
+                     + " ORDER BY NumOfDates DESC"
+                     ;
+             ResultSet activeCustDateRs = DBConnection.ExecQuery(activeCustDateQuery);
+             ResultSetMetaData activeCustDateMd = activeCustDateRs.getMetaData();
+             
+            
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
+      out.write("            ");
+ for(int k=1;k<activeCustDateMd.getColumnCount()+1;k++){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"<th>\" + \"");
+      out.print( activeCustDateMd.getColumnLabel(k) );
+      out.write("\" + \"</th>\");\n");
+      out.write("            ");
+ }
+      out.write("\n");
+      out.write("            $(\"#mainTable thead\").append(\"</tr>\");\n");
+      out.write("            ");
+ while(activeCustDateRs.next()){ 
+      out.write("\n");
+      out.write("            $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
+      out.print( activeCustDateRs.getString("SSN") );
+      out.write("\" \n");
+      out.write("            + \"</td><td>\" + \"");
+      out.print( activeCustDateRs.getInt("NumOfDates") );
+      out.write("\" + \"</td></tr>\");\n");
+      out.write("            ");
+ } 
+      out.write("\n");
+      out.write("            \n");
+      out.write("        }\n");
+      out.write("        function showActiveCust(){\n");
+      out.write("            hideTable();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            $(\"#activeUser\").removeClass(\"hidden\");\n");
+      out.write("            $(\"#title\").html(\"Most Active Customers\");\n");
+      out.write("        }\n");
+      out.write("        function hideActiveCust(){\n");
+      out.write("            $(\"#title\").html(\"\");\n");
+      out.write("            $(\"#activeUser\").addClass(\"hidden\");\n");
+      out.write("        }\n");
+      out.write("        \n");
+      out.write("        function showAEDEmp(){\n");
+      out.write("            hideTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            $(\"#title\").html(\"Add Edit Delete Employee\");\n");
+      out.write("            $(\"#aedEmp\").removeClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function hideAEDEmp(){\n");
+      out.write("            $(\"#title\").html(\"\");\n");
+      out.write("            $(\"#aedEmp\").addClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function showSalesReport(){\n");
+      out.write("            hideTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            $(\"#title\").html(\"Monthly Sales Report\");\n");
+      out.write("            $(\"#salesReport\").removeClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function hideSalesReport(){\n");
+      out.write("            $(\"#title\").html(\"\");\n");
+      out.write("            $(\"#salesReport\").addClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        \n");
+      out.write("        function showCustTotalRev(){\n");
+      out.write("            showTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideSalesReport();\n");
+      out.write("            $(\"#mainTable thead\").html(\"\");\n");
+      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
+      out.write("            ");
+
+            String getCustTotalRevQuery = "SELECT U.SSN, U.PPP, CASE U.PPP"
                     + " WHEN 'Super-User' THEN SUM(D.BookingFee)+100"
                     + " WHEN 'Good-User' THEN SUM(D.BookingFee)+50"
                     + " WHEN 'User-User' THEN SUM(D.BookingFee)"
@@ -204,9 +421,10 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
                     + " FROM User U, Profile P, Date D"
                     + " WHERE U.SSN = P.OwnerSSN"
                     + " AND (P.ProfileID = D.Profile1 OR P.ProfileID = D.Profile2)"
-                    + " GROUP BY U.SSN";
+                    + " GROUP BY U.SSN,U.PPP"
+                    + " ORDER BY TotalRevenue DESC";
             java.sql.ResultSet custTotalRevRs = DBConnection.ExecQuery(getCustTotalRevQuery);
-            String[] custTotalRevCol = {"SSN", "TotalRevenue"};
+            String[] custTotalRevCol = {"SSN", "PPP","TotalRevenue"};
             
       out.write("\n");
       out.write("             $(\".sub-header\").html(\"Total Revenue from Customers\");\n");
@@ -228,7 +446,10 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
       out.print( custTotalRevRs.getString("SSN") );
       out.write("\" + \"</td><td>\"\n");
-      out.write("                        +\"");
+      out.write("                    +\"");
+      out.print( custTotalRevRs.getString("PPP") );
+      out.write("\" + \"</td><td>\"    \n");
+      out.write("                    +\"");
       out.print( custTotalRevRs.getFloat("TotalRevenue") );
       out.write("\"+\"</td></tr>\");\n");
       out.write("            ");
@@ -238,6 +459,9 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        }\n");
       out.write("        function showCustRevByDate(){\n");
       out.write("            showTable();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideSalesReport();\n");
       out.write("            $(\"#mainTable thead\").html(\"\");\n");
       out.write("            $(\"#mainTable tbody\").html(\"\");\n");
       out.write("            ");
@@ -277,16 +501,11 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
  }
       out.write("   \n");
       out.write("        }\n");
-      out.write("        function showSalesReport(){\n");
-      out.write("            $(\"#title\").html(\"Monthly Sales Report\");\n");
-      out.write("            $(\"#salesReport\").removeClass('hidden');\n");
-      out.write("        }\n");
-      out.write("        function hideSalesReport(){\n");
-      out.write("            $(\"#title\").html(\"\");\n");
-      out.write("            $(\"#salesReport\").addClass('hidden');\n");
-      out.write("        }\n");
+      out.write("        \n");
       out.write("        function showEmp(){ \n");
       out.write("            showTable();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideActiveCust();\n");
       out.write("            hideSalesReport();\n");
       out.write("            ");
 
@@ -331,6 +550,8 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        }\n");
       out.write("        function showUser(){\n");
       out.write("            showTable();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideActiveCust();\n");
       out.write("            hideSalesReport();\n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");
@@ -375,6 +596,8 @@ public final class Manager_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        }\n");
       out.write("        function showDate(){\n");
       out.write("            showTable();\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            hideActiveCust();\n");
       out.write("            hideSalesReport();\n");
       out.write("            $(\"thead\").html(\"\");\n");
       out.write("            $(\"tbody\").html(\"\");\n");

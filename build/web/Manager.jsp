@@ -1,3 +1,4 @@
+<%@page import="java.sql.ResultSetMetaData"%>
 <%@page import="DBWorks.DBConnection"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.ResultSet" %>
@@ -24,6 +25,7 @@
   </head>
 
   <body>
+
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -39,7 +41,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#" id="emp" onclick="showEmp();" >Employee</a></li>
             <li><a href="#" onclick="showUser();" >User</a></li>
-            <li><a href="#" onclick="showDate()">Date</a></li>
+            <li><a  href="Date.jsp" >Date</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -47,29 +49,34 @@
         </div>
       </div>
     </nav>
-
+      
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="Manager.jsp">Home <span class="sr-only">(current)</span></a></li>
-            <li><a href="#" >Add, Edit, Delete Employee </a></li>
+            <li><a onclick="showAEDEmp();" href="#" >Add, Edit, Delete Employee </a></li>
             <li onclick="showSalesReport();"><a href="#">Sales Reports</a></li>
             <li onclick="showCustRevByDate();"><a href="#">Revenue from Dates by Customer</a></li>
             <li onclick="showCustTotalRev();"><a href="#">Most revenue customer</a></li>
-            <li><a href="#">Most active customers</a></li>
-            <li><a href="#">Who dated who?</a></li>
-            <li><a href="#">Highest-rated customers</a></li>
-            <li><a href="#">Best days to have a date</a></li>
+            <li onclick="showActiveCust();"><a href="#">Most active customers</a></li>
+            <li onclick="showCustRepTotalRev();"><a href="#">Most Revenue Customer Representative</a></li>
+            <li ><a href="#">Who dated who?</a></li>
+            <li onclick="showHighRateCust();"><a href="#">Highest-rated customers</a></li>
+            <li onclick="showBestDays();"><a href="#">Best days to have a date</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header" id="title">Your Dashboard</h1>
           
           <div class="playArea">
-          <div id="salesReport" class="hidden">
-              <div id="salesReportA">
-                  <form action="salesReport.jsp">
+              <div id="activeUser" class="hidden">
+                  <button type="button" onclick="showActiveCustLikes();" class="btn btn-default" >Based on # of Likes</button>
+                  <button type="button" onclick="showActiveCustDates();" class="btn btn-default" >Based on # of Dates</button>
+              </div>
+       <div id="salesReport" class="hidden">
+        <div id="salesReportA">
+         <form action="salesReport.jsp">
           <select name="month" class="dropdown">
             <option value="1">1</option>
             <option value="2">2</option>
@@ -96,12 +103,15 @@
               <div id="salesReportB">
                   
               </div>
-            </div>  
-              
+            </div>  <!-- End of get sales report-->
+            <div id="aedEmp" class="hidden">
+                <a  class="btn btn-default" href="AddEmp.jsp">Add Employee</a>
+                <a  class="btn btn-default" href="EditEmp.jsp">Edit Employee</a>
+                <a  class="btn btn-default" href="DeleteEmp.jsp">Delete Employee</a>
+            </div>
           </div>
-        <div id="mainTable">
           
-            
+        <div id="mainTable">
           <h2 class="sub-header"></h2>
           <div class="table-responsive" >
             <table class="table table-striped">
@@ -109,7 +119,6 @@
                 </thead>
               <tbody id="bodyemp">
                
-                
               </tbody>
             </table>
           </div>
@@ -118,7 +127,6 @@
         </div>
       </div>
     </div>
-       
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -136,16 +144,187 @@
             });
             $('.nav.nav-sidebar li a').click(function(){
                 hideTable();
-                hideSalesReport();
             });
         });
-        
-        function obtainSalesReport(){
-         
+        function showBestDays(){
+              $(".sub-header").html("Best days to have a date");
+            showTable();
+            hideActiveCust();
+            hideAEDEmp();
+            hideSalesReport();
+            
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+                String bestDaysQuery = "SELECT DATE(D.Date_Time) AS Date, AVG(D.User1Rating+D.User2Rating) AS AvgRating"
+                        + " FROM Date D"
+                        + " WHERE YEAR(D.Date_Time)='2014'"
+                        + " GROUP BY DATE(D.Date_Time)";
+                ResultSet bestDaysRs = DBConnection.ExecQuery(bestDaysQuery);
+                ResultSetMetaData bestDaysMd = bestDaysRs.getMetaData();
+            %>
+            $("#mainTable thead").append("<tr>");
+            <% for(int k=1;k<bestDaysMd.getColumnCount()+1;k++){ %>
+            $("#mainTable thead").append("<th>" + "<%= bestDaysMd.getColumnLabel(k) %>" + "</th>");
+            <% }%>
+            $("#mainTable thead").append("</tr>");
+            <% while(bestDaysRs.next()){ %>
+            $("#mainTable tbody").append("<tr><td>" + "<%= bestDaysRs.getString("Date") %>" 
+            + "</td><td>" + "<%= bestDaysRs.getString("AvgRating") %>" 
+            + "</td></tr>");
+            <% } %>
+        }
+        function showHighRateCust(){
+            showTable();
+            $(".sub-header").html("Highest Rated Customers");
+            hideActiveCust();
+            hideAEDEmp();
+            hideSalesReport();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+            String highRateCustQuery = "SELECT * FROM User"
+                    + " WHERE Rating > 2"
+                    + " ORDER BY Rating DESC";
+            ResultSet highRateCustRs = DBConnection.ExecQuery(highRateCustQuery);
+             ResultSetMetaData highRateCustMd = highRateCustRs.getMetaData();
+            %>
+            $("#mainTable thead").append("<tr>");
+            <% for(int k=1;k<highRateCustMd.getColumnCount()+1;k++){ %>
+            $("#mainTable thead").append("<th>" + "<%= highRateCustMd.getColumnLabel(k) %>" + "</th>");
+            <% }%>
+            $("#mainTable thead").append("</tr>");
+            <% while(highRateCustRs.next()){ %>
+            $("#mainTable tbody").append("<tr><td>" + "<%= highRateCustRs.getString("SSN") %>" 
+            + "</td><td>" + "<%= highRateCustRs.getString("PPP") %>" 
+            + "</td><td>"+ "<%= highRateCustRs.getInt("Rating") %>"
+            + "</td><td>"+"<%= highRateCustRs.getDate("DateOfLastAct").toString() %>" + "</td></tr>");
+            <% } %>
+        }
+        function showCustRepTotalRev(){
+            $(".sub-header").html("Total Revenue of Customer Representatives");
+            showTable();
+            hideActiveCust();
+            hideAEDEmp();
+            hideSalesReport();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+             String activeCustRepQuery = "SELECT D.CustRep, SUM(D.BookingFee) AS TotalRevenue,COUNT(D.CustRep) AS NumDateTransactions"
+                     + " FROM Date D"
+                     + " GROUP BY D.CustRep"
+                     + " ORDER BY TotalRevenue DESC"
+                     ;
+             ResultSet activeCustRepRs = DBConnection.ExecQuery(activeCustRepQuery);
+             ResultSetMetaData activeCustRepMd = activeCustRepRs.getMetaData();
+             
+            %>
+            $("#mainTable thead").append("<tr>");
+            <% for(int k=1;k<activeCustRepMd.getColumnCount()+1;k++){ %>
+            $("#mainTable thead").append("<th>" + "<%= activeCustRepMd.getColumnLabel(k) %>" + "</th>");
+            <% }%>
+            $("#mainTable thead").append("</tr>");
+            <% while(activeCustRepRs.next()){ %>
+            $("#mainTable tbody").append("<tr><td>" + "<%= activeCustRepRs.getString("CustRep") %>" 
+            + "</td><td>" + "<%= activeCustRepRs.getFloat("TotalRevenue") %>" 
+            + "</td><td>"+ "<%= activeCustRepRs.getInt("NumDateTransactions") %>" +"</td></tr>");
+            <% } %>
+        }
+        function showActiveCustLikes(){
+            showTable();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+                String activeCustLikeQuery = "SELECT P.OwnerSSN,COUNT(P.OwnerSSN) AS NumOfLikes "
+                        + " FROM Profile P,Likes L"
+                        + " WHERE P.ProfileID=L.Liker"
+                        + " GROUP BY P.OwnerSSN"
+                        + " HAVING COUNT(P.OwnerSSN) >= 2"
+                        + " ORDER BY NumOfLikes DESC";
+                ResultSet activeCustLikeRs = DBConnection.ExecQuery(activeCustLikeQuery);
+                ResultSetMetaData activeCustLikeMd = activeCustLikeRs.getMetaData();
+                
+            %>
+                    
+                    $("#mainTable thead").append("<tr>");
+                    <% for(int k=1;k<activeCustLikeMd.getColumnCount()+1;k++){ %>
+                        $("#mainTable thead").append("<th>" + "<%= activeCustLikeMd.getColumnLabel(k) %>" + "</th>");
+                        <% }%>
+                    $("#mainTable thead").append("</tr>");
+                    <% while(activeCustLikeRs.next()){ %>
+                        $("#mainTable tbody").append("<tr><td>" + "<%= activeCustLikeRs.getString("OwnerSSN") %>" 
+                              + "</td><td>" + "<%= activeCustLikeRs.getInt("NumOfLikes") %>" + "</td></tr>");
+                    <% } %>
+                    
+                    
+        }
+        function showActiveCustDates(){
+            showTable();
+            $("#mainTable thead").html("");
+            $("#mainTable tbody").html("");
+            <%
+             String activeCustDateQuery = "SELECT U.SSN,COUNT(U.SSN) AS NumOfDates"
+                     + " FROM User U,Profile P,Date D"
+                     + " WHERE P.OwnerSSN=U.SSN AND (P.ProfileID=D.Profile1 OR P.ProfileID=D.Profile2)"
+                     + " GROUP BY U.SSN"
+                     + " HAVING COUNT(NumOfDates) >= 2"
+                     + " ORDER BY NumOfDates DESC"
+                     ;
+             ResultSet activeCustDateRs = DBConnection.ExecQuery(activeCustDateQuery);
+             ResultSetMetaData activeCustDateMd = activeCustDateRs.getMetaData();
+             
+            %>
+            $("#mainTable thead").append("<tr>");
+            <% for(int k=1;k<activeCustDateMd.getColumnCount()+1;k++){ %>
+            $("#mainTable thead").append("<th>" + "<%= activeCustDateMd.getColumnLabel(k) %>" + "</th>");
+            <% }%>
+            $("#mainTable thead").append("</tr>");
+            <% while(activeCustDateRs.next()){ %>
+            $("#mainTable tbody").append("<tr><td>" + "<%= activeCustDateRs.getString("SSN") %>" 
+            + "</td><td>" + "<%= activeCustDateRs.getInt("NumOfDates") %>" + "</td></tr>");
+            <% } %>
             
         }
+        function showActiveCust(){
+            hideTable();
+            hideSalesReport();
+            hideAEDEmp();
+            $("#activeUser").removeClass("hidden");
+            $("#title").html("Most Active Customers");
+        }
+        function hideActiveCust(){
+            $("#title").html("");
+            $("#activeUser").addClass("hidden");
+        }
+        
+        function showAEDEmp(){
+            hideTable();
+            hideActiveCust();
+            hideSalesReport();
+            $("#title").html("Add Edit Delete Employee");
+            $("#aedEmp").removeClass('hidden');
+        }
+        function hideAEDEmp(){
+            $("#title").html("");
+            $("#aedEmp").addClass('hidden');
+        }
+        function showSalesReport(){
+            hideTable();
+            hideActiveCust();
+            hideAEDEmp();
+            $("#title").html("Monthly Sales Report");
+            $("#salesReport").removeClass('hidden');
+        }
+        function hideSalesReport(){
+            $("#title").html("");
+            $("#salesReport").addClass('hidden');
+        }
+        
         function showCustTotalRev(){
             showTable();
+            hideActiveCust();
+            hideAEDEmp();
+            hideSalesReport();
             $("#mainTable thead").html("");
             $("#mainTable tbody").html("");
             <%
@@ -178,6 +357,9 @@
         }
         function showCustRevByDate(){
             showTable();
+            hideAEDEmp();
+            hideActiveCust();
+            hideSalesReport();
             $("#mainTable thead").html("");
             $("#mainTable tbody").html("");
             <%
@@ -201,16 +383,11 @@
                         +"<%= custRevDateRs.getFloat("SUM(D.BookingFee)") %>"+"</td></tr>");
             <% }%>   
         }
-        function showSalesReport(){
-            $("#title").html("Monthly Sales Report");
-            $("#salesReport").removeClass('hidden');
-        }
-        function hideSalesReport(){
-            $("#title").html("");
-            $("#salesReport").addClass('hidden');
-        }
+        
         function showEmp(){ 
             showTable();
+            hideAEDEmp();
+            hideActiveCust();
             hideSalesReport();
             <%
             String getEmpQuery = "SELECT * FROM Employee";
@@ -235,6 +412,8 @@
         }
         function showUser(){
             showTable();
+            hideAEDEmp();
+            hideActiveCust();
             hideSalesReport();
             $("thead").html("");
             $("tbody").html("");
@@ -259,6 +438,8 @@
         }
         function showDate(){
             showTable();
+            hideAEDEmp();
+            hideActiveCust();
             hideSalesReport();
             $("thead").html("");
             $("tbody").html("");
