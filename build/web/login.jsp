@@ -27,7 +27,7 @@
 		if (rs.next()) {
                     // login success
                     session.setAttribute("login", username);
-                    response.sendRedirect("User.jsp");
+                    response.sendRedirect("SelectProfile.jsp");
 		} 
                 
                 //If not user, check if is Manager

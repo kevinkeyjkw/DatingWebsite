@@ -33,16 +33,10 @@ public class RetrieveWhoDatedWho extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RetrieveWhoDatedWho</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RetrieveWhoDatedWho at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+           String ssn = request.getParameter("SSN");
+           String getCustDatedQuery = "SELECT * FROM";
+            
+            
         } finally {
             out.close();
         }

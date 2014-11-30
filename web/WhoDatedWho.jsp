@@ -33,7 +33,14 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script href="js/bootstrap.min.js" ></script>
         <script type="text/javascript" language="javascript">
-            
+            $(document).ready(function(){
+                $("input").on('input',function(){
+                   $.get('RetrieveWhoDatedWho',{SSN:$("#SSN").val()})
+                           .done(function(responseText){
+                               $("#mainTable").html(responseText);
+                           });
+                });
+            });
             
         </script>    
     </body>

@@ -77,28 +77,6 @@
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <h1 class="page-header"><%= id %></h1>
                     
-                    <!--<div class="row placeholders">
-                      <div class="col-xs-6 col-sm-3 placeholder">
-                        <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-                        <h4>Label</h4>
-                        <span class="text-muted">Something else</span>
-                      </div>
-                      <div class="col-xs-6 col-sm-3 placeholder">
-                        <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-                        <h4>Label</h4>
-                        <span class="text-muted">Something else</span>
-                      </div>
-                      <div class="col-xs-6 col-sm-3 placeholder">
-                        <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-                        <h4>Label</h4>
-                        <span class="text-muted">Something else</span>
-                      </div>
-                      <div class="col-xs-6 col-sm-3 placeholder">
-                        <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-                        <h4>Label</h4>
-                        <span class="text-muted">Something else</span>
-                      </div>
-                    </div>-->
                     <div id="mainTable">
                         <h2 class="sub-header"></h2>
                         <div class="table-responsive" >
@@ -125,7 +103,26 @@
         <script href="js/bootstrap.min.js" ></script>
         <script type="text/javascript" language="javascript">
                         $(document).ready(function(){
-                            
+                            <%if (state!=null){ 
+                                    if (state.equals("make")){%>
+                                    alert("You date request has been sent.");
+                                    
+                                <%}
+                                    if (state.equals("cancel")){%>
+                                    alert("You succesfully cancel a date .");
+                                <%}
+                                    if (state.equals("like")){%>
+                                        alert("You succesfully like this profile .");
+                                        
+                                <%}
+                                    if (state.equals("failedlike")){%>
+                                        alert("You already like this profile");
+                                <%} if (state.equals("comment")){%>
+                                        alert("You successfully comment a past date");
+                                <%} if (state.equals("refer")){%>
+                                        alert("You successfully refer a profile to your friend");
+                                <%} }state=null; 
+                                    %>
                             $('.nav.nav-sidebar li').click(function(){
                                 $('.nav.nav-sidebar li').removeClass('active');
                                 $(this).toggleClass('active');
@@ -137,8 +134,49 @@
                              
                         });
                          function showOtherUser(){
-                             
-                             
+                             <%  String getOtherUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
+                                                + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Profile';";
+                                        java.sql.ResultSet otherUserColRs = DBConnection.ExecQuery(getOtherUserColQuery);
+                                 String ownerssnQuery = "SELECT Person.SSN FROM Person, Profile P WHERE P.ProfileID='"+id+"'AND P.OwnerSSN=Person.SSN";
+                                 java.sql.ResultSet ownerssnRs=DBConnection.ExecQuery(ownerssnQuery);
+                                 String ssn="";
+                                  if (ownerssnRs.next()){
+                                      ssn=ownerssnRs.getString("SSN");
+                                 }
+                                  String getOtherUserProfile = "SELECT * FROM Profile ,User WHERE Profile.OwnerSSN !='" + ssn +"'AND Profile.OwnerSSN=User.SSN";
+                                  java.sql.ResultSet otherUserProfileRs = DBConnection.ExecQuery(getOtherUserProfile);
+                              %>
+                                showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Profile Table");
+                                $("thead").append("<tr>");
+                                 <% while (otherUserColRs.next()) {
+                                    if (!otherUserColRs.getString("COLUMN_NAME").equals("OwnerSSN")
+                                        &&!otherUserColRs.getString("COLUMN_NAME").equals("CreationDate")
+                                        &&!otherUserColRs.getString("COLUMN_NAME").equals("LastModDate")){%>
+                                    $("thead").append("<th>" + "<%= otherUserColRs.getString("COLUMN_NAME")%>" + "</th>");
+                                    <%}%>
+                                <% }%>
+                                $("thead").append("<th>Operation</th>")
+                                $("thead").append("</tr>");
+                                
+                                 <% while (otherUserProfileRs.next()){ %>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append("<td><a href=\"ProfileInfo.jsp?ProfileID=<%=otherUserProfileRs.getString(1)%>\">"+"<%=otherUserProfileRs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getInt(3)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getInt(4)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getInt(5)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getInt(6)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getString(7)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getString(8)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getDouble(9)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getInt(10)%>"+"</td>"+
+                                                      "<td>"+"<%=otherUserProfileRs.getString(11)%>"+"</td>");
+                                    $("tbody").append("<input type=button onclick=\"javascrip:window.open('DateForm.jsp?datee=<%=otherUserProfileRs.getString(1)%>&dater=<%=id%>','_self');return;\" value=\"Date\">");
+                                    $("tbody").append("<input type=button onclick=\"javascrip:window.open('LikeProfile.jsp?likee=<%=otherUserProfileRs.getString(1)%>&liker=<%=id%>','_self');return;\" value=\"Like\">");
+                                    $("tbody").append("</tr");
+                                <% } %>
                          }
                         function getPastDate(){
                             <%
@@ -154,8 +192,8 @@
                                                   + "<th>User1Rating</th><th>User2Rating</th><th>Operation</th></tr>");
                                 <% while (getPastDateRs.next()){%>
                                     $("tbody").append("<tr>");
-                                    $("tbody").append("<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPastDateRs.getString(1)%>\">"+"<%=getPastDateRs.getString(1)%>"+"</td>"+
-                                                      "<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPastDateRs.getString(2)%>\">"+"<%=getPastDateRs.getString(2)%>"+"</td>"+
+                                    $("tbody").append("<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPastDateRs.getString(1)%>\" >"+"<%=getPastDateRs.getString(1)%>"+"</td>"+
+                                                      "<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPastDateRs.getString(2)%>\" >"+"<%=getPastDateRs.getString(2)%>"+"</td>"+
                                                       "<td>"+"<%=getPastDateRs.getDate(4)%> <%=getPastDateRs.getTime(4)%>"+"</td>"+
                                                       "<td>"+"<%=getPastDateRs.getString(5)%>"+"</td>"+
                                                       "<td>"+<%=getPastDateRs.getInt(8)%>+"</td>"+
@@ -166,7 +204,28 @@
                                 
                         }
                         function getPendingDate(){
-                            
+                               <%
+                                dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                cal = Calendar.getInstance();
+                                String getPendingDateQuery = "SELECT * FROM Date D WHERE (D.Profile1= '" + id + "' OR D.Profile2= '" + id +"') AND D.Date_Time > '"+dateFormat.format(cal.getTime())+"'";
+                                        java.sql.ResultSet getPendingDateRs = DBConnection.ExecQuery(getPendingDateQuery);
+                                %>
+                                showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Pending Date Table");
+                                $("thead").append("<tr><th>Profile1</th><th>Profile2</th><th>Date</th>"
+                                        + "<th>Location</th><th>Operation</th></tr>");
+                                  <% while (getPendingDateRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append("<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPendingDateRs.getString(1)%>\">"+"<%=getPendingDateRs.getString(1)%>"+"</td>"+
+                                                      "<td><a href=\"ProfileInfo.jsp?ProfileID=<%=getPendingDateRs.getString(2)%>\">"+"<%=getPendingDateRs.getString(2)%>"+"</td>"+
+                                                      "<td>"+"<%=getPendingDateRs.getDate(4)%> <%=getPendingDateRs.getTime(4)%>"+"</td>"+
+                                                      "<td>"+"<%=getPendingDateRs.getString(5)%>"+"</td>");
+                                    $("tbody").append("<input type=button onclick=\"javascript:if(confirm('Are you sure that you want to cancel this date?')==true){window.open('CancelDate.jsp?datee=<%=getPendingDateRs.getString(2)%>&dater=<%=getPendingDateRs.getString(1)%>&date=<%=getPendingDateRs.getDate(4)%>&time=<%=getPendingDateRs.getTime(4)%>','_self')};return;\" value=\"Cancel\">");
+                 
+                                    $("tbody").append("</tr");
+                                <%}%>
                         }
                        function myLike(){
                               <%
