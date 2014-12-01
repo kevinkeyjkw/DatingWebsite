@@ -34,17 +34,71 @@ public class RetrieveProfile extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        boolean printedHead = false;
+        
         try {
+            String trait = request.getParameter("trait");
+            boolean isHeight = false;
+            boolean isWeight = false;
+            boolean isHairOrHobby = false;
+            boolean isAge = false;
+            try{//height [3.0-8.0] or weight [10-500]
+                float temp = Float.parseFloat(trait);
+                isHeight = (temp >= 3.0 && temp <= 8.0) ? true:false;
+                isWeight = (temp >= 80.0 && temp <= 300.0) ? true:false;
+                isAge = (temp >= 18.0 && temp <= 70.0) ? true:false;
+            }catch(NumberFormatException e){
+                isHairOrHobby = true;
+            }
             
               String getProfileQuery = "SELECT * FROM Profile";
               java.sql.ResultSet profileRs = DBConnection.ExecQuery(getProfileQuery);
               String []columns = {"ProfileID","OwnerSSN","Age","DatingAgeRangeStart","DatingAgeRangeEnd","DatinGeoRange","M_F","Hobbies","Height","Weight","HairColor","CreationDate","LastModDate"};
+              
               while(profileRs.next()){
-                   out.println("<thead>");
-                   for(String x:columns){
-                       out.println("<th>"+x+"</th>");
+                  if(!printedHead){
+                      printedHead=true;
+                       out.println("<thead>");
+                       for(String x:columns){
+                           out.println("<th>"+x+"</th>");
+                       }
+                       out.println("</thead><tbody>");
+                  }
+                    
+                    int age = profileRs.getInt("Age");
+                    int dateAgeStart = profileRs.getInt("DatingAgeRangeStart");
+                    int dateAgeEnd = profileRs.getInt("DatingAgeRangeEnd");
+                    int geoRange = profileRs.getInt("DatinGeoRange");
+                    String hobbies = profileRs.getString("Hobbies").toLowerCase();//hobbies
+                    float height = profileRs.getFloat("Height");
+                    int weight = profileRs.getInt("Weight");
+                    String hairColor = profileRs.getString("HairColor").toLowerCase();//hair color
+                    
+                    
+                   if(isHeight && (height >= Float.parseFloat(trait) - 0.2 && height <= Float.parseFloat(trait) + 0.2 )){
+                       printToTable(out, profileRs);
+                   }else if(isWeight && (weight >= Float.parseFloat(trait) - 20 && weight <=  Float.parseFloat(trait) + 20  )){
+                       printToTable(out, profileRs);
+                   }else if(isAge && (age >= Float.parseFloat(trait) - 3 && age <= Float.parseFloat(trait) + 3)){
+                       printToTable(out, profileRs);
+                   }else if(isHairOrHobby){
+                       if(hairColor.contains(trait.toLowerCase()) || hobbies.contains(trait.toLowerCase())){
+                           printToTable(out, profileRs);
+                       }
                    }
-                    String profileID=profileRs.getString("ProfileID");
+              }
+              if(printedHead){
+                  out.println("</tbody>");
+              }
+        } catch(SQLException sqle){
+        
+        }finally {
+            out.close();
+        }
+    }
+
+    void printToTable(PrintWriter out,java.sql.ResultSet profileRs) throws SQLException{
+          String profileID=profileRs.getString("ProfileID");
                     String ssn =profileRs.getString("OwnerSSN");
                     int age = profileRs.getInt("Age");
                     int dateAgeStart = profileRs.getInt("DatingAgeRangeStart");
@@ -57,15 +111,16 @@ public class RetrieveProfile extends HttpServlet {
                     String hairColor = profileRs.getString("HairColor");//hair color
                     String creationDate = profileRs.getDate("CreationDate").toString();
                     String lastModDate = profileRs.getDate("LastModDate").toString();
-                   out.println("</thead>");
-              }
-        } catch(SQLException sqle){
         
-        }finally {
-            out.close();
-        }
+                   out.println("<tr><td>" + profileID + "</td><td>" + ssn
+                          +"</td><td>"+age+"</td><td>"+dateAgeStart
+                          +"</td><td>" + dateAgeEnd + "</td><td>" + geoRange
+                          +"</td><td>" + m_f + "</td><td>" + hobbies
+                          +"</td><td>" + height + "</td><td>" + weight
+                           + "</td><td>" + hairColor + "</td><td>" + creationDate
+                          +"</td><td>"+ lastModDate + "</td></tr>");
+                   
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

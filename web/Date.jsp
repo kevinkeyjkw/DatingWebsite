@@ -35,7 +35,7 @@
                 $("input").on('input',function(){
                    $.get('RetrieveDate',{dateOrSSN:$("#dateOrSSN").val()})
                            .done(function(responseText){
-                               $("#mainTable").html(responseText);
+                               $("table").html(responseText);
                            });
                 });
             });

@@ -1,6 +1,6 @@
 <%-- 
-    Document   : FindByTrait
-    Created on : Nov 30, 2014, 5:21:03 PM
+    Document   : RetrieveDateRevenue
+    Created on : Nov 30, 2014, 10:52:13 PM
     Author     : Kevin
 --%>
 
@@ -12,36 +12,32 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
-        <input type="text" placeholder="Enter Traits" name="trait" id="trait" > 
+        <h1>Retrieve revenue from dates by calendar date or SSN</h1>
         
-        <div id="profile"> 
+        <input type="text" placeholder="Enter Employee's SSN" name="dateOrSSN" id="dateOrSSN" > 
+        
+        <div id="toBeDelEmp"> 
             <div id="mainTable">
             <h2 class="sub-header"></h2>
                 <div class="table-responsive col-sm-12" >
                     <table class="table table-striped col-sm-12">
-                        
-                    </table>
-                   
+                    </table>           
                 </div>
-             
             </div>
-            
         </div>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script href="js/bootstrap.min.js" ></script>
     <script type="text/javascript" language="javascript">    
-       $(document).ready(function(){
+        $(document).ready(function(){
            $("input").on('input',function(){
-               $.get('RetrieveProfile',{trait:$("#trait").val()})
+               $.get('RetrieveDateRevenue',{dateOrSSN:$("#dateOrSSN").val()})
                        .done(function(responseText){
-                  
                   $("table").html(responseText);
-          
                });
            });
-       });
-        </script>
+        });
+        
+    </script>
     </body>
 </html>

@@ -41,11 +41,12 @@ public class RetrieveDate extends HttpServlet {
         String timeOfDate;
         String location;
         String comments;
-        String hourlyRate;
+        String bookingFee;
         String td = "</td><td>";
         try {
             boolean notSSN=true;
             int count=0;
+            int totalRevenue = 0;
             String dateOrSSN = request.getParameter("dateOrSSN");
             String ifDateQuery = "SELECT U.SSN,D.Profile1,D.Profile2,D.Date_Time,D.Location,D.Comments,D.BookingFee"
                     + " FROM Date D,User U,Profile P"
@@ -79,12 +80,12 @@ public class RetrieveDate extends HttpServlet {
                      timeOfDate = ifSSNRs.getDate("Date_Time").toString();
                      location = ifSSNRs.getString("Location");
                      comments = ifSSNRs.getString("Comments");
-                     hourlyRate = String.valueOf(ifSSNRs.getInt("BookingFee"));
-                    
+                     bookingFee = String.valueOf(ifSSNRs.getInt("BookingFee"));
+                    totalRevenue += ifSSNRs.getInt("BookingFee");
                     out.println("<tr><td>" + ssn + td + p1
                           + td + p2 + td + timeOfDate
                           +td + location + td+ comments
-                          +td + hourlyRate+ "</td></tr>");
+                          +td + bookingFee+ "</td></tr>");
                 }
                 if(notSSN){
                    
@@ -103,13 +104,17 @@ public class RetrieveDate extends HttpServlet {
                      timeOfDate = ifDateRs.getDate("Date_Time").toString();
                      location = ifDateRs.getString("Location");
                      comments = ifDateRs.getString("Comments");
-                     hourlyRate = String.valueOf(ifDateRs.getInt("BookingFee"));
+                     bookingFee = String.valueOf(ifDateRs.getInt("BookingFee"));
+                     totalRevenue += ifDateRs.getInt("BookingFee");
                      out.println("<tr><td>" + ssn + td + p1
                           + td + p2 + td + timeOfDate
                           +td + location + td+ comments
-                          +td + hourlyRate+ "</td></tr>");
+                          +td + bookingFee+ "</td></tr>");
                     }
                 }
+                if(totalRevenue != 0){
+                    out.println("<tr><td>TotalRevenue:</td><td>" + totalRevenue + "</td></tr>");
+                 }
                    out.println("</tbody>");
                    
             }catch(SQLException sqle){

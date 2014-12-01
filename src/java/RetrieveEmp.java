@@ -78,16 +78,6 @@ public class RetrieveEmp extends HttpServlet {
                }catch(SQLException sqle){
                
                }
-            /* TODO output your page here. You may use following sample code. */
-//            out.println("<!DOCTYPE html>");
-//            out.println("<html>");
-//            out.println("<head>");
-//            out.println("<title>Servlet RetrieveEmp</title>");            
-//            out.println("</head>");
-//            out.println("<body>");
-//            out.println("<h1>Servlet RetrieveEmp at " + request.getContextPath() + "</h1>");
-//            out.println("</body>");
-//            out.println("</html>");
         } finally {
             out.close();
         }

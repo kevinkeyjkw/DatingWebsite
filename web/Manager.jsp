@@ -64,6 +64,7 @@
             <li ><a href="#">Who dated who?</a></li>
             <li onclick="showHighRateCust();"><a href="#">Highest-rated customers</a></li>
             <li onclick="showBestDays();"><a href="#">Best days to have a date</a></li>
+            
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -74,6 +75,8 @@
                   <button type="button" onclick="showActiveCustLikes();" class="btn btn-default" >Based on # of Likes</button>
                   <button type="button" onclick="showActiveCustDates();" class="btn btn-default" >Based on # of Dates</button>
               </div>
+              
+                    
        <div id="salesReport" class="hidden">
         <div id="salesReportA">
          <form action="salesReport.jsp">

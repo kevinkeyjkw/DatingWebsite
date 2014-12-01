@@ -34,13 +34,14 @@
     <script type="text/javascript" language="javascript">    
        $(document).ready(function(){
            $("input").on('input',function(){
-               $.get('RetrieveEmp',{trait:$("#trait").val()})
+               $.get('RetrieveProfile',{trait:$("#trait").val()})
                        .done(function(responseText){
                   
                   $("table").html(responseText);
           
                });
            });
+       });
         </script>
     </body>
 </html>
