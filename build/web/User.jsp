@@ -57,21 +57,21 @@
             <div class="row">
                 <div class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
-                        <li id="home" class="active" onclick="showOtherUser();"><a href="#" >Other User<span class="sr-only">(current)</span></a></li>
-                        <li id="past" onclick="getPastDate();"><a href="#" >My Past Dates</a></li>
-                        <li id="pending" onclick="getPendingDate();"><a href="#" >My Pending Dates</a></li>
-                        <li id="mylike" onclick="myLike();"><a href="#" >My Like List</li>
+                        <li id="home" class="active" onclick="showOtherUser();hideActiveButtons();"><a href="#" >Other User<span class="sr-only">(current)</span></a></li>
+                        <li id="past" onclick="getPastDate();hideActiveButtons();"><a href="#" >My Past Dates</a></li>
+                        <li id="pending" onclick="getPendingDate();hideActiveButtons();"><a href="#" >My Pending Dates</a></li>
+                        <li id="mylike" onclick="myLike();hideActiveButtons();"><a href="#" >My Like List</li>
                     </ul>
                     <ul class="nav nav-sidebar">
-                        <li><a href="#">Profile Filter</a></li>
-                        <li><a href="#">Most Active</a></li>
-                        <li><a href="#">Most Highly Rated</a></li>
+                        <li><a href="FindByTrait.jsp" >Profile Filter</a></li>
+                        <li onclick="showActiveButtons();"><a href="#">Most Active</a></li>
+                        <li onclick="highRateProfile();hideActiveButtons();"><a href="#">Most Highly Rated</a></li>
                     </ul>
                     <ul class="nav nav-sidebar">
-                        <li><a href="#">Popular Geo-Date Location</a></li>
+                        <li onclick="popGeo();hideActiveButtons();"><a href="#">Popular Geo-Date Location</a></li>
                     </ul>
                     <ul class="nav nav-sidebar">
-                        <li><a href="#">Date Suggestion</a></li>
+                        <li onclick="hideActiveButtons();"><a href="#">Date Suggestion</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -90,6 +90,10 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div id="activenessButtons" class="hidden" >
+                        <button type="button" class="btn btn-default" onclick="showActiveProfLike();">By Likes</button>
+                        <button type="button" class="btn btn-default" onclick="showActiveProfDate();" >By Dates</button>
                     </div>
 
                 </div>
@@ -133,6 +137,105 @@
                             %>
                              
                         });
+                        function showActiveProfLike(){
+                            <%
+                            String activeCustLikeQuery = "SELECT P.ProfileID,COUNT(P.ProfileID) AS NumOfLikes FROM Profile P,Likes L"
+                                               + " WHERE P.ProfileID=L.Liker GROUP BY P.ProfileID"
+                                              + " HAVING COUNT(P.ProfileID) >= 2 ORDER BY NumOfLikes DESC";
+                                        java.sql.ResultSet activeCustLikeRs=DBConnection.ExecQuery(activeCustLikeQuery);
+                            %>
+                                    showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Most Active Profile Based on Likes Table");
+                                $("thead").append("<tr>");
+                                $("thead").append("<th>Profile</th>" +
+                                                  "<th>Activeness</th>");
+                                $("thead").append("</tr>");
+                                <% while (activeCustLikeRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append(
+                                                      "<td>"+"<%=activeCustLikeRs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=activeCustLikeRs.getInt(2)%>"+"</td>"); 
+
+                                    $("tbody").append("</tr>");
+                                <%}%>
+                        }
+                        function showActiveProfDate(){
+                            <%
+                            String activeCustDateQuery = "SELECT P.ProfileID,COUNT(P.ProfileID) AS NumOfDates"
+                                    + " FROM Profile P,Date D WHERE (P.ProfileID=D.Profile1 OR P.ProfileID=D.Profile2)"
+                                    + " GROUP BY P.ProfileID HAVING COUNT(NumOfDates) >= 2"
+                                    + " ORDER BY NumOfDates DESC";
+                                        java.sql.ResultSet activeCustDateRs=DBConnection.ExecQuery(activeCustDateQuery);
+                            %>
+                                    showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Most Active Profile Based on Dates Table");
+                                $("thead").append("<tr>");
+                                $("thead").append("<th>Profile</th><th>Activeness</th>");
+                                $("thead").append("</tr>");
+                                <% while (activeCustDateRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append("<td>"+"<%=activeCustDateRs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=activeCustDateRs.getInt(2)%>"+"</td>"); 
+                                    $("tbody").append("</tr>");
+                                <%}%>
+                        }
+                        function hideActiveButtons(){
+                            $("#activenessButtons").addClass("hidden");
+                        }
+                        function showActiveButtons(){
+                            $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Activeness of profiles");
+                            $("#activenessButtons").removeClass("hidden");
+                        }
+                        function highRateProfile(){
+                            <%
+                            String highRateProfileQuery = "SELECT User, SUM(Total)/SUM(Count) AS AvgRating FROM "
+                                                +"(SELECT D.Profile1 AS User, SUM(D.User2Rating) AS Total, COUNT(D.Profile1) AS Count "
+                                                +" FROM Date D, Profile P WHERE D.Profile1 = P.ProfileID AND D.User2Rating!=-1 GROUP BY User "
+                                                +" UNION ALL SELECT D.Profile2 As User, SUM(D.User1Rating) AS Total, COUNT(D.Profile2) AS Count"
+                                                +" FROM Date D, Profile P WHERE D.Profile2 = P.ProfileID AND D.User1Rating!=-1 GROUP BY User) T GROUP BY User ORDER BY AvgRating DESC";
+                                        java.sql.ResultSet highRateProfileRs=DBConnection.ExecQuery(highRateProfileQuery);
+                            %>
+                             showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Highly Rated Profile Based on Dates Table");
+                                $("thead").append("<tr><th>Profile</th><th>Average Rating</th></tr>");
+                                 <% while (highRateProfileRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append(
+                                                      "<td>"+"<%=highRateProfileRs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=highRateProfileRs.getFloat(2)%>"+"</td>"); 
+
+                                    $("tbody").append("</tr>");
+                                <%}%>
+                        }
+                        function popGeo(){
+                            <%
+                            String popularGeo = "SELECT D.Location, COUNT(D.Location) as Occurances FROM Date D GROUP BY D.Location HAVING COUNT(D.Location)>=2";
+                            java.sql.ResultSet popularGeoRs=DBConnection.ExecQuery(popularGeo);
+                            %>
+                                showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Popular Geo-Date Location Table");
+                                $("thead").append("<tr><th>Location</th><th>Occurance</th></tr>");
+                                <% while (popularGeoRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append(
+                                                      "<td>"+"<%=popularGeoRs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=popularGeoRs.getInt(2)%>"+"</td>"); 
+
+                                    $("tbody").append("</tr>");
+                                <%}%>
+                            
+                        }
+                        
                          function showOtherUser(){
                              <%  String getOtherUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
                                                 + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Profile';";
