@@ -14,7 +14,7 @@
     </head>
     <body>
         <h1>Add Employee</h1>
-        <form role="form" method=POST action="processAddEmp.jsp">
+        <form  role="form" method="POST" action="processAddEmp.jsp" id="form1">
             <div class="form-group form-group-sm col-sm-6 col-md-offset-3">
                 <label for="empSSN">SSN </label>
                 <input type="text" class="form-control input-sm" name="SSN" id="empSSN" placeholder="Employee's SSN">
@@ -69,5 +69,24 @@
             </div>
             <button type="submit" class="btn btn-default col-sm-2 col-md-offset-5">Submit</button>
         </form>
+        
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script href="js/bootstrap.min.js" ></script>
+        <script type="text/javascript" language="javascript">
+            $(document).ready(function(){
+//            var form=$("#form1");
+//            form.submit(function(){
+//                $.post('AddEmp',form.serialize())
+//                        .done(
+//                    function(responseText){
+//                        if(reponseText === 'OK'){
+//                            alert("Success");
+//                        }
+//                    });
+//                
+//            });
+        });
+        </script>
     </body>
 </html>

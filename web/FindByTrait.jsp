@@ -12,7 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Find by age, height, weight, hair color, hobbies</h1>
         <input type="text" placeholder="Enter Traits" name="trait" id="trait" > 
         
         <div id="profile"> 

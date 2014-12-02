@@ -1,3 +1,7 @@
+<%@page import="java.util.logging.Logger"%>
+<%@page import="java.util.logging.Level"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.PreparedStatement"%>
 <%@page import="DBWorks.DBConnection"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.ResultSet" %>
@@ -15,8 +19,20 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <% 
-            String insertPersonQuery = "INSERT INTO Person(SSN,Password,FirstName,LastName,Street,City,State,Zipcode,Email,Telephone)"
+       
+        <div id="success" >
+        <h1></h1>
+        <button type="button" class="btn btn-default" onclick="window.location.replace('AddEmp.jsp');">Return</button>
+        </div> 
+        
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script href="js/bootstrap.min.js" ></script>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function(){
+             <% 
+            
+             String insertPersonQuery = "INSERT INTO Person(SSN,Password,FirstName,LastName,Street,City,State,Zipcode,Email,Telephone)"
                     + " VALUES ('"+request.getParameter("SSN")+"','"
                     + request.getParameter("Password") + "','"
                     + request.getParameter("FirstName") + "','"
@@ -27,24 +43,26 @@
                     + request.getParameter("Zipcode") + ",'"
                     + request.getParameter("Email") + "','"
                     + request.getParameter("Telephone") + "')";
-            DBConnection.ExecUpdateQuery(insertPersonQuery);
+            
             String insertEmpQuery = "INSERT INTO Employee(SSN,Role,StartDate,HourlyRate)"
                     + "VALUES('" + request.getParameter("SSN") + "','"
                     + request.getParameter("Role") + "','"
                     + request.getParameter("StartDate") + "',"
                     + request.getParameter("HourlyRate") + ")";//hourly rate is int
-            DBConnection.ExecUpdateQuery(insertEmpQuery);
             
+            int myResultSet1 = DBConnection.ExecUpdateQuery(insertPersonQuery);
+            int myResultSet2 = DBConnection.ExecUpdateQuery(insertEmpQuery);
+           
+         
+          
         %>
-        <h1>Added Employee!</h1>
-        <button type="button" class="btn btn-default" onclick="window.location.replace('AddEmp.jsp');">Return</button>
-        
-        
-        
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script href="js/bootstrap.min.js" ></script>
-    <script type="text/javascript" language="javascript">
-        
+                if(<%= myResultSet1 %> > 0 && <%= myResultSet2 %> > 0 ){
+                    $("h1").html("Successfully added Employee");
+                }else{
+                    $("h1").html("Failed to add Employee");
+                }
+            
+        });
     </script>
     </body>
 </html>

@@ -42,6 +42,7 @@
             <li><a href="#" id="emp" onclick="showEmp();" >Employee</a></li>
             <li><a href="#" onclick="showUser();" >User</a></li>
             <li><a  href="Date.jsp" >Date</a></li>
+            <li><a href="index.jsp">Logout</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -61,7 +62,6 @@
             <li onclick="showCustTotalRev();"><a href="#">Most revenue customer</a></li>
             <li onclick="showActiveCust();"><a href="#">Most active customers</a></li>
             <li onclick="showCustRepTotalRev();"><a href="#">Most Revenue Customer Representative</a></li>
-            <li ><a href="#">Who dated who?</a></li>
             <li onclick="showHighRateCust();"><a href="#">Highest-rated customers</a></li>
             <li onclick="showBestDays();"><a href="#">Best days to have a date</a></li>
             

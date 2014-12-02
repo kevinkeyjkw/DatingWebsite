@@ -70,7 +70,7 @@
                         <li onclick="popGeo();hideActiveButtons();"><a href="#">Popular Geo-Date Location</a></li>
                     </ul>
                     <ul class="nav nav-sidebar">
-                        <li onclick="hideActiveButtons();"><a href="#">Date Suggestion</a></li>
+                        <li onclick="showDateSuggestions();hideActiveButtons();"><a href="#">Date Suggestion</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -136,6 +136,37 @@
                             %>
                              
                         });
+                        function showDateSuggestions(){
+                        <%
+                                String getLikesQuery = "SELECT L.Likee AS ProfileID, P.Age, P.DatingAgeRangeStart, P.DatingAgeRangeEnd, P.M_F, P.Hobbies, P.Height, P.Weight, P.HairColor, P.CreationDate, P.LastModDate"
+                                        + " FROM Likes L, Profile P"
+                                        + " WHERE L.Liker='" + id + "' AND P.ProfileID=L.Likee";
+                                java.sql.ResultSet suggestedProfilesRs=DBConnection.ExecQuery(getLikesQuery);
+                                
+                        %>    
+                                showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Suggested dates based on your likes");
+                                $("thead").append("<tr>");
+                                $("thead").append("<th>Profile</th><th>Age</th><th>DatingAgeRangeStart</th><th>DatingAgeRangeEnd</th><th>M_F</th><th>Hobbies</th><th>Height</th><th>Weight</th><th>HairColor</th><th>CreationDate</th><th>LastModDate</th>");
+                                $("thead").append("</tr>");
+                                <% while (suggestedProfilesRs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append("<td>"+"<%=suggestedProfilesRs.getString("ProfileID")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getInt("Age")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getInt("DatingAgeRangeStart")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getInt("DatingAgeRangeEnd")%>"+"</td>"+ 
+                                              "<td>"+"<%=suggestedProfilesRs.getString("M_F")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getString("Hobbies")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getInt("Height")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getInt("Weight")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getString("HairColor")%>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getDate("CreationDate").toString() %>"+"</td>"+
+                                              "<td>"+"<%=suggestedProfilesRs.getDate("LastModDate").toString() %>"+"</td>");
+                                    $("tbody").append("</tr>");
+                                <%}%>
+                        }       
                         function showActiveProfLike(){
                             <%
                             String activeCustLikeQuery = "SELECT P.ProfileID,COUNT(P.ProfileID) AS NumOfLikes FROM Profile P,Likes L"
@@ -143,7 +174,7 @@
                                               + " HAVING COUNT(P.ProfileID) >= 2 ORDER BY NumOfLikes DESC";
                                         java.sql.ResultSet activeCustLikeRs=DBConnection.ExecQuery(activeCustLikeQuery);
                             %>
-                                    showTable();
+                                showTable();
                                 $("thead").html("");
                                 $("tbody").html("");
                                 $(".sub-header").html("Most Active Profile Based on Likes Table");
@@ -197,7 +228,7 @@
                                                 +"(SELECT D.Profile1 AS User, SUM(D.User2Rating) AS Total, COUNT(D.Profile1) AS Count "
                                                 +" FROM Date D, Profile P WHERE D.Profile1 = P.ProfileID AND D.User2Rating!=-1 GROUP BY User "
                                                 +" UNION ALL SELECT D.Profile2 As User, SUM(D.User1Rating) AS Total, COUNT(D.Profile2) AS Count"
-                                                +" FROM Date D, Profile P WHERE D.Profile2 = P.ProfileID AND D.User1Rating!=-1 GROUP BY User) T GROUP BY User ORDER BY AvgRating DESC";
+                                                +" FROM Date D, Profile P WHERE D.Profile2 = P.ProfileID AND D.User1Rating!=-1 GROUP BY User) T GROUP BY User HAVING AvgRating > 2.0 ORDER BY AvgRating DESC";
                                         java.sql.ResultSet highRateProfileRs=DBConnection.ExecQuery(highRateProfileQuery);
                             %>
                              showTable();

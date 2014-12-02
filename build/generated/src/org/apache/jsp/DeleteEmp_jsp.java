@@ -3,8 +3,11 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import DBWorks.DBConnection;
+import java.sql.SQLException;
+import java.sql.ResultSet;
 
-public final class FindByTrait_jsp extends org.apache.jasper.runtime.HttpJspBase
+public final class DeleteEmp_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
 
   private static final JspFactory _jspxFactory = JspFactory.getDefaultFactory();
@@ -44,17 +47,22 @@ public final class FindByTrait_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <title>JSP Page</title>\n");
+      out.write("        <link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">\n");
       out.write("    </head>\n");
       out.write("    <body>\n");
-      out.write("        <h1>Hello World!</h1>\n");
-      out.write("        <input type=\"text\" placeholder=\"Enter Traits\" name=\"trait\" id=\"trait\" > \n");
+      out.write("        <h1>Delete Employee</h1>\n");
       out.write("        \n");
-      out.write("        <div id=\"profile\"> \n");
+      out.write("        <input type=\"text\" placeholder=\"Enter Employee's SSN\" name=\"SSN\" id=\"SSN\" > \n");
+      out.write("        \n");
+      out.write("        <div id=\"toBeDelEmp\"> \n");
       out.write("            <div id=\"mainTable\">\n");
       out.write("            <h2 class=\"sub-header\"></h2>\n");
       out.write("                <div class=\"table-responsive col-sm-12\" >\n");
@@ -67,21 +75,42 @@ public final class FindByTrait_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            </div>\n");
       out.write("            \n");
       out.write("        </div>\n");
+      out.write("        <button type=\"button\" class=\"btn btn-default\">Delete</button>\n");
       out.write("        \n");
-      out.write("        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js\"></script>\n");
+      out.write("        \n");
+      out.write("    <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js\"></script>\n");
       out.write("    <script href=\"js/bootstrap.min.js\" ></script>\n");
       out.write("    <script type=\"text/javascript\" language=\"javascript\">    \n");
-      out.write("       $(document).ready(function(){\n");
+      out.write("        $(document).ready(function(){\n");
+      out.write("            $(\"button\").hide();\n");
       out.write("           $(\"input\").on('input',function(){\n");
-      out.write("               $.get('RetrieveProfile',{trait:$(\"#trait\").val()})\n");
+      out.write("               $.get('RetrieveEmp',{ssn:$(\"#SSN\").val()})\n");
       out.write("                       .done(function(responseText){\n");
       out.write("                  \n");
       out.write("                  $(\"table\").html(responseText);\n");
       out.write("          \n");
+      out.write("                  if(responseText !== \"\"){\n");
+      out.write("                      $(\"button\").show();\n");
+      out.write("                  }else{\n");
+      out.write("                      $(\"button\").hide();\n");
+      out.write("                  }\n");
       out.write("               });\n");
       out.write("           });\n");
-      out.write("       });\n");
-      out.write("        </script>\n");
+      out.write("           $(\"button\").click(function(){\n");
+      out.write("               $.get('DeleteEmployee',{ssn:$(\"#SSN\").val()})\n");
+      out.write("                       .done(function(responseText){\n");
+      out.write("                           if(parseInt(responseText)> 0){\n");
+      out.write("                            $(\"#toBeDelEmp\").html(\"Successfully deleted employee!\");   \n");
+      out.write("                           }else{\n");
+      out.write("                            $(\"#toBeDelEmp\").html(\"Failed to delete employee\");   \n");
+      out.write("                           }\n");
+      out.write("                       });\n");
+      out.write("                  $(\"button\").hide();\n");
+      out.write("               \n");
+      out.write("           });\n");
+      out.write("            \n");
+      out.write("        });\n");
+      out.write("    </script>\n");
       out.write("    </body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {
