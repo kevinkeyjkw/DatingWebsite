@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.text.DateFormat;
@@ -55,6 +57,8 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html lang=\"en\">\n");
       out.write("    <head>\n");
@@ -74,6 +78,7 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    </head>\n");
       out.write("\n");
       out.write("    <body>\n");
+      out.write("        \n");
       out.write("        <nav class=\"navbar navbar-inverse navbar-fixed-top\" role=\"navigation\">\n");
       out.write("            ");
 
@@ -89,6 +94,7 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        <span class=\"icon-bar\"></span>\n");
       out.write("                        <span class=\"icon-bar\"></span>\n");
       out.write("                    </button>\n");
+      out.write("                    <h1 id=\"title\">Default</h1>\n");
       out.write("                    <a class=\"navbar-brand\" href=\"#\">");
       out.print(id);
       out.write("</a>\n");
@@ -121,13 +127,11 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        <li><a href=\"FindByTrait.jsp\" >Profile Filter</a></li>\n");
       out.write("                        <li onclick=\"showActiveButtons();\"><a href=\"#\">Most Active</a></li>\n");
       out.write("                        <li onclick=\"highRateProfile();hideActiveButtons();\"><a href=\"#\">Most Highly Rated</a></li>\n");
-      out.write("                    </ul>\n");
-      out.write("                    <ul class=\"nav nav-sidebar\">\n");
       out.write("                        <li onclick=\"popGeo();hideActiveButtons();\"><a href=\"#\">Popular Geo-Date Location</a></li>\n");
-      out.write("                    </ul>\n");
-      out.write("                    <ul class=\"nav nav-sidebar\">\n");
       out.write("                        <li onclick=\"showDateSuggestions();hideActiveButtons();\"><a href=\"#\">Date Suggestion</a></li>\n");
+      out.write("                        <li onclick=\"suggestGeoDates();\"><a href=\"#\">Geo Date</a></li>\n");
       out.write("                    </ul>\n");
+      out.write("                    \n");
       out.write("                </div>\n");
       out.write("                <div class=\"col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main\">\n");
       out.write("                    <h1 class=\"page-header\">");
@@ -213,7 +217,7 @@ if (state!=null){
       out.write("                        function showDateSuggestions(){\n");
       out.write("                        ");
 
-                                String getLikesQuery = "SELECT L.Likee, P.Age, P.DatingAgeRangeStart, P.DatingAgeRangeEnd, P.M_F, P.Hobbies, P.Height, P.Weight, P.HairColor, P.CreationDate, P.LastModDate"
+                                String getLikesQuery = "SELECT L.Likee AS ProfileID, P.Age, P.DatingAgeRangeStart, P.DatingAgeRangeEnd, P.M_F, P.Hobbies, P.Height, P.Weight, P.HairColor, P.CreationDate, P.LastModDate"
                                         + " FROM Likes L, Profile P"
                                         + " WHERE L.Liker='" + id + "' AND P.ProfileID=L.Likee";
                                 java.sql.ResultSet suggestedProfilesRs=DBConnection.ExecQuery(getLikesQuery);
@@ -223,7 +227,7 @@ if (state!=null){
       out.write("                                showTable();\n");
       out.write("                                $(\"thead\").html(\"\");\n");
       out.write("                                $(\"tbody\").html(\"\");\n");
-      out.write("                                $(\".sub-header\").html(\"Most Active Profile Based on Likes Table\");\n");
+      out.write("                                $(\".sub-header\").html(\"Suggested dates based on your likes\");\n");
       out.write("                                $(\"thead\").append(\"<tr>\");\n");
       out.write("                                $(\"thead\").append(\"<th>Profile</th><th>Age</th><th>DatingAgeRangeStart</th><th>DatingAgeRangeEnd</th><th>M_F</th><th>Hobbies</th><th>Height</th><th>Weight</th><th>HairColor</th><th>CreationDate</th><th>LastModDate</th>\");\n");
       out.write("                                $(\"thead\").append(\"</tr>\");\n");
@@ -232,7 +236,7 @@ if (state!=null){
       out.write("\n");
       out.write("                                    $(\"tbody\").append(\"<tr>\");\n");
       out.write("                                    $(\"tbody\").append(\"<td>\"+\"");
-      out.print(suggestedProfilesRs.getString("Profile"));
+      out.print(suggestedProfilesRs.getString("ProfileID"));
       out.write("\"+\"</td>\"+\n");
       out.write("                                              \"<td>\"+\"");
       out.print(suggestedProfilesRs.getInt("Age"));
@@ -654,6 +658,81 @@ if (state!=null){
       out.write("                           \n");
       out.write("                       };\n");
       out.write("        </script>\n");
+      out.write("        <script src=\"https://maps.googleapis.com/maps/api/js?v=3.exp\">\n");
+      out.write("        \n");
+      out.write("    </script>\n");
+      out.write("    <script>\n");
+      out.write("        geocoder = new google.maps.Geocoder();\n");
+      out.write("        var coordinateArray = [];\n");
+      out.write("        var userSSNs = [];\n");
+      out.write("        function suggestGeoDates(){\n");
+      out.write("            ");
+
+            String selectUserAddress = "SELECT P.SSN,P.Street,P.City,P.State,P.Zipcode"
+                    + " FROM Person P,User U"
+                    + " WHERE P.SSN=U.SSN";
+            List addresses = new ArrayList<String>();
+            
+            java.sql.ResultSet userAddRs = DBConnection.ExecQuery(selectUserAddress);
+            while(userAddRs.next()){
+                addresses.add(userAddRs.getString("Street")+ " " + userAddRs.getString("City")
+                        + ", " + userAddRs.getString("State") + " " + userAddRs.getInt("Zipcode"));
+                
+      out.write("\n");
+      out.write("                userSSNs.push(\"");
+      out.print( userAddRs.getString("SSN") );
+      out.write("\");\n");
+      out.write("                ");
+
+            }
+            
+      out.write("\n");
+      out.write("            ");
+ 
+            for(int i=0;i < addresses.size();i++){
+            
+      out.write("\n");
+      out.write("              getCoordinates(\"");
+      out.print( addresses.get(i) );
+      out.write("\");      \n");
+      out.write("             ");
+}
+      out.write("\n");
+      out.write("        }\n");
+      out.write("        \n");
+      out.write("        var counter = 0;\n");
+      out.write("        function getCoordinates(address){\n");
+      out.write("            var coordinates;\n");
+      out.write("            var coord_obj;\n");
+      out.write("            geocoder.geocode({address:address},function(results,status){\n");
+      out.write("                \n");
+      out.write("                coord_obj = results[0].geometry.location;\n");
+      out.write("                coordinates = [coord_obj.k,coord_obj.B];\n");
+      out.write("                coordinateArray.push(coordinates);\n");
+      out.write("                counter += 1;\n");
+      out.write("                //alert(address+\"Coordinates\"+coordinates+\"counter\"+ counter+\"size\"+ ");
+      out.print( addresses.size());
+      out.write(" );\n");
+      out.write("                if(counter === ");
+      out.print( addresses.size() );
+      out.write("){\n");
+      out.write("                    var n;\n");
+      out.write("                    var currentUserGeo = [40.911935,-73.133255];\n");
+      out.write("                    var suggestedGeoUsersSSN = [];\n");
+      out.write("                    for(n = 0;n < coordinateArray.length;n++){\n");
+      out.write("                        alert(\"Coordinates x:\"+coordinateArray[n][0]+\" y: \"+coordinateArray[n][1]);\n");
+      out.write("                        if(coordinateArray[n][0] >= currentUserGeo[0]-0.1 && coordinateArray[n][0] <= currentUserGeo[0]+0.1 \n");
+      out.write("                                && coordinateArray[n][1] >= currentUserGeo[1]-0.1 && coordinateArray[n][1] >= currentUserGeo[1]+0.1)\n");
+      out.write("                        {\n");
+      out.write("                            suggestedGeoUsersSSN.push(userSSNs[n]);\n");
+      out.write("                        }\n");
+      out.write("                        \n");
+      out.write("                    }\n");
+      out.write("                }\n");
+      out.write("            });\n");
+      out.write("            \n");
+      out.write("        }\n");
+      out.write("    </script>\n");
       out.write("        \n");
       out.write("        \n");
       out.write("    </body>\n");

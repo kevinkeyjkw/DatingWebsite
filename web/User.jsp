@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.text.DateFormat"%>
@@ -24,10 +26,13 @@
     </head>
 
     <body>
+        
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <%
+                
                 String id = (String) session.getAttribute("ProfileID");
                 String state= (String)session.getAttribute("state");
+                
             %>
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -65,13 +70,11 @@
                         <li><a href="FindByTrait.jsp" >Profile Filter</a></li>
                         <li onclick="showActiveButtons();"><a href="#">Most Active</a></li>
                         <li onclick="highRateProfile();hideActiveButtons();"><a href="#">Most Highly Rated</a></li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
                         <li onclick="popGeo();hideActiveButtons();"><a href="#">Popular Geo-Date Location</a></li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
                         <li onclick="showDateSuggestions();hideActiveButtons();"><a href="#">Date Suggestion</a></li>
+                        <li onclick="suggestGeoDates();"><a href="#">Geo Date</a></li>
                     </ul>
+                    
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <h1 class="page-header"><%= id %></h1>
@@ -106,6 +109,24 @@
         <script href="js/bootstrap.min.js" ></script>
         <script type="text/javascript" language="javascript">
                         $(document).ready(function(){
+                            <%
+                            
+                            String currentUserAddQuery = "SELECT P.Street,P.City,P.State,P.Zipcode"
+                        + " FROM Person P,Profile Pr"
+                        + " WHERE Pr.ProfileID='"+(String)session.getAttribute("ProfileID")+"' AND P.SSN=Pr.OwnerSSN";
+                            java.sql.ResultSet currentUserAddRs = DBConnection.ExecQuery(currentUserAddQuery);
+                            while(currentUserAddRs.next()){
+                            %>
+                                    
+                               getIndividualCoordinate("<%= currentUserAddRs.getString("Street") %>" 
+                                       + "<%= currentUserAddRs.getString("City") %>" + ", "
+                                       + "<%= currentUserAddRs.getString("State") %>" + " " 
+                                       + "<%= currentUserAddRs.getInt("Zipcode") %>");
+                            <%    
+                            }
+                            
+                            %>
+                                    
                             <%if (state!=null){ 
                                     if (state.equals("make")){%>
                                     alert("You date request has been sent.");
@@ -141,6 +162,7 @@
                                 String getLikesQuery = "SELECT L.Likee AS ProfileID, P.Age, P.DatingAgeRangeStart, P.DatingAgeRangeEnd, P.M_F, P.Hobbies, P.Height, P.Weight, P.HairColor, P.CreationDate, P.LastModDate"
                                         + " FROM Likes L, Profile P"
                                         + " WHERE L.Liker='" + id + "' AND P.ProfileID=L.Likee";
+                                
                                 java.sql.ResultSet suggestedProfilesRs=DBConnection.ExecQuery(getLikesQuery);
                                 
                         %>    
@@ -384,6 +406,86 @@
                            
                        };
         </script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp">
+        
+    </script>
+    <script>
+        geocoder = new google.maps.Geocoder();
+        var coordinateArray = [];
+        var userSSNs = [];
+        var currentUserGeo;
+        var counter = 0;
+        function suggestGeoDates(){
+            userSSNs=[];
+            coordinateArray = [];
+            counter = 0;
+            <%
+            String selectUserAddress = "SELECT P.SSN,P.Street,P.City,P.State,P.Zipcode"
+                    + " FROM Person P,User U"
+                    + " WHERE P.SSN=U.SSN";
+            List addresses = new ArrayList<String>();
+            
+            java.sql.ResultSet userAddRs = DBConnection.ExecQuery(selectUserAddress);
+            while(userAddRs.next()){
+                addresses.add(userAddRs.getString("Street")+ " " + userAddRs.getString("City")
+                        + ", " + userAddRs.getString("State") + " " + userAddRs.getInt("Zipcode"));
+                %>
+                userSSNs.push("<%= userAddRs.getString("SSN") %>");
+                <%
+            }
+            %>
+            <% 
+            for(int i=0;i < addresses.size();i++){
+            %>
+              getCoordinates("<%= addresses.get(i) %>");      
+             <%}%>
+        }
+        
+        function getIndividualCoordinate(address){
+            geocoder.geocode({address:address},function(results,status){
+                coord_obj = results[0].geometry.location;
+                currentUserGeo = [coord_obj.k,coord_obj.B];
+         
+            });
+        }
+        function getCoordinates(address){
+            var coord_obj;
+            geocoder.geocode({address:address},function(results,status){
+                coord_obj = results[0].geometry.location;
+                coordinateArray.push([coord_obj.k,coord_obj.B]);
+                counter += 1;
+                //alert(address+"Coordinates"+coordinates+"counter"+ counter+"size"+ <%= addresses.size()%> );
+                if(counter === <%= addresses.size() %>){
+                    var n;
+                    var suggestedGeoUsersSSN = [];
+                    for(n = 0;n < coordinateArray.length;n++){
+                        //alert("Coordinates x:"+coordinateArray[n][0]+" y: "+coordinateArray[n][1]);
+                        
+                        if(parseFloat(coordinateArray[n][0]) >= currentUserGeo[0]-0.1 && parseFloat(coordinateArray[n][0]) <= currentUserGeo[0]+0.1 
+                                && parseFloat(coordinateArray[n][1]) >= currentUserGeo[1]-0.1 && parseFloat(coordinateArray[n][1]) <= currentUserGeo[1]+0.1)
+                        {
+                            suggestedGeoUsersSSN.push(userSSNs[n]);
+                            
+                        }
+                        
+                    }//end for
+                    $("thead").html("");
+                    $("tbody").html("");
+                    $(".sub-header").html("Suggested Geo Dates For You");
+                    $("thead").append("<tr><th>ProfileID</th><th>Age</th><th>City</th><th>DatingAgeRangeStart</th><th>DatingAgeRangeEnd</th><th>DatinGeoRange</th><th>M_F</th><th>Hobbies</th><th>Height</th><th>Weight</th><th>HairColor</th><th>CreationDate</th><th>LastModDate</th></tr>");
+                    
+                    suggestedGeoUsersSSN.forEach(function(entry){
+                         $.get('RetrieveProfileBySSN',{ssn:entry})
+                            .done(function(responseText){
+                            $("tbody").append(responseText);
+                        });
+                    });
+                    
+                }//end if
+            });
+            
+        }
+    </script>
         
         
     </body>
