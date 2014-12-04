@@ -103,9 +103,9 @@ public final class CustRep_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("          <ul class=\"nav nav-sidebar\">\n");
       out.write("            <li class=\"active\"><a href=\"CustRep.jsp\">Home <span class=\"sr-only\">(current)</span></a></li>\n");
       out.write("            <li onclick=\"recordDate();\"><a href=\"#\">Record a Date</a></li>\n");
-      out.write("            <li><a onclick=\"showAEDEmp();\" href=\"#\" >Add, Edit, Delete Customer </a></li>\n");
+      out.write("            <li><a onclick=\"editCustomer();\" href=\"#\" >Add, Edit, Delete Customer </a></li>\n");
       out.write("            <li onclick=\"showCustRevByDate();\"><a href=\"#\">Produce Customer Mailing Lists</a></li>\n");
-      out.write("            \n");
+      out.write("          \n");
       out.write("            \n");
       out.write("          </ul>\n");
       out.write("        </div>\n");
@@ -240,7 +240,7 @@ public final class CustRep_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            $(\"#activeUser\").addClass(\"hidden\");\n");
       out.write("        }\n");
       out.write("        \n");
-      out.write("        function showAEDEmp(){\n");
+      out.write("        function editCustomer(){\n");
       out.write("            hideTable();\n");
       out.write("            hideRecordDate()\n");
       out.write("            hideActiveCust();\n");
@@ -255,6 +255,14 @@ public final class CustRep_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("          function hideRecordDate(){\n");
       out.write("            $(\"#title\").html(\"\");\n");
       out.write("            $(\"#recordDate\").addClass('hidden');\n");
+      out.write("        }\n");
+      out.write("        function showSalesReport(){\n");
+      out.write("            hideTable();\n");
+      out.write("            hideActiveCust();\n");
+      out.write("            hideRecordDate()\n");
+      out.write("            hideAEDEmp();\n");
+      out.write("            $(\"#title\").html(\"Record a Date\");\n");
+      out.write("            $(\"#salesReport\").removeClass('hidden');\n");
       out.write("        }\n");
       out.write("        function recordDate(){\n");
       out.write("            hideTable();\n");
@@ -325,166 +333,16 @@ public final class CustRep_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("   \n");
       out.write("        }\n");
       out.write("        \n");
-      out.write("        function showEmp(){ \n");
-      out.write("            showTable();\n");
-      out.write("            hideAEDEmp();\n");
-      out.write("            hideActiveCust();\n");
-      out.write("            hideSalesReport();\n");
-      out.write("            ");
-
-            String getEmpQuery = "SELECT * FROM Employee";
-                java.sql.ResultSet empRs = DBConnection.ExecQuery(getEmpQuery);
-                
-                String getEmpColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Employee';";
-                java.sql.ResultSet empColRs = DBConnection.ExecQuery(getEmpColQuery);
-            
-      out.write("\n");
-      out.write("            $(\"#mainTable thead\").html(\"\");\n");
-      out.write("            $(\"#mainTable tbody\").html(\"\");\n");
-      out.write("            $(\".sub-header\").html(\"Employee Table\");\n");
-      out.write("            $(\"#mainTable thead\").append(\"<tr>\");\n");
-      out.write("            ");
- while(empColRs.next()){ 
-      out.write("\n");
-      out.write("               $(\"#mainTable thead\").append(\"<th>\" + \"");
-      out.print( empColRs.getString("COLUMN_NAME") );
-      out.write("\" + \"</th>\");\n");
-      out.write("            ");
- } 
-      out.write("\n");
-      out.write("                $(\"#mainTable thead\").append(\"</tr>\");\n");
-      out.write("            ");
- while(empRs.next()){ 
-      out.write("    \n");
-      out.write("                $(\"#mainTable tbody\").append(\"<tr><td>\" + \"");
-      out.print( empRs.getString("SSN") );
-      out.write("\" + \"</td><td>\"+\"");
-      out.print( empRs.getString("Role") );
-      out.write("\"\n");
-      out.write("            +\"</td><td>\" + \"");
-      out.print( empRs.getDate("StartDate") );
-      out.write("\"+\"</td><td>\" + \"");
-      out.print( empRs.getInt("HourlyRate") );
-      out.write("\" + \"</td></tr>\");\n");
-      out.write("            ");
- }
-      out.write("   \n");
-      out.write("        }\n");
-      out.write("        function showUser(){\n");
-      out.write("            showTable();\n");
-      out.write("            hideAEDEmp();\n");
-      out.write("            hideActiveCust();\n");
-      out.write("            hideSalesReport();\n");
-      out.write("            $(\"thead\").html(\"\");\n");
-      out.write("            $(\"tbody\").html(\"\");\n");
-      out.write("            ");
-
-             String getUserQuery = "SELECT * FROM User";
-                java.sql.ResultSet userRs = DBConnection.ExecQuery(getUserQuery);
-                
-                String getUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='User';";
-                java.sql.ResultSet userColRs = DBConnection.ExecQuery(getUserColQuery);
-            
-      out.write("\n");
-      out.write("            $(\".sub-header\").html(\"User Table\");\n");
-      out.write("            $(\"thead\").append(\"<tr>\");\n");
-      out.write("            ");
- while(userColRs.next()){ 
-      out.write("\n");
-      out.write("                $(\"thead\").append(\"<th>\" + \"");
-      out.print( userColRs.getString("COLUMN_NAME") );
-      out.write("\" + \"</th>\");\n");
-      out.write("            ");
- } 
-      out.write("\n");
-      out.write("                $(\"thead\").append(\"</tr>\");\n");
-      out.write("            ");
- while(userRs.next()){ 
-      out.write("    \n");
-      out.write("                $(\"tbody\").append(\"<tr><td>\" + \"");
-      out.print( userRs.getString("SSN") );
-      out.write("\" + \"</td><td>\"+\"");
-      out.print( userRs.getString("PPP") );
-      out.write("\"\n");
-      out.write("            +\"</td><td>\" + \"");
-      out.print( userRs.getInt("Rating") );
-      out.write("\"+\"</td><td>\" + \"");
-      out.print( userRs.getDate("DateOfLastAct") );
-      out.write("\" + \"</td></tr>\");\n");
-      out.write("            ");
- }
-      out.write("   \n");
-      out.write("        }\n");
-      out.write("        function showDate(){\n");
-      out.write("            showTable();\n");
-      out.write("            hideAEDEmp();\n");
-      out.write("            hideActiveCust();\n");
-      out.write("            hideSalesReport();\n");
-      out.write("            $(\"thead\").html(\"\");\n");
-      out.write("            $(\"tbody\").html(\"\");\n");
-      out.write("            ");
-
-            String getDateQuery = "SELECT * FROM Date";
-                java.sql.ResultSet dateRs = DBConnection.ExecQuery(getDateQuery);
-                
-                String getDateColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Date';";
-                java.sql.ResultSet dateColRs = DBConnection.ExecQuery(getDateColQuery);
-            
-      out.write("\n");
-      out.write("            $(\".sub-header\").html(\"Dates Table\");\n");
-      out.write("            $(\"thead\").append(\"<tr>\");\n");
-      out.write("            ");
- while(dateColRs.next()){ 
-      out.write("\n");
-      out.write("                $(\"thead\").append(\"<th>\" + \"");
-      out.print( dateColRs.getString("COLUMN_NAME") );
-      out.write("\" + \"</th>\");\n");
-      out.write("            ");
- } 
-      out.write("\n");
-      out.write("                $(\"thead\").append(\"</tr>\");\n");
-      out.write("            ");
- while(dateRs.next()){ 
-      out.write("    \n");
-      out.write("                $(\"tbody\").append(\"<tr><td>\" + \"");
-      out.print( dateRs.getString("Profile1") );
-      out.write("\" + \"</td><td>\"+\"");
-      out.print( dateRs.getString("Profile2") );
-      out.write("\"\n");
-      out.write("            +\"</td><td>\" + \"");
-      out.print( dateRs.getString("CustRep") );
-      out.write("\"+\"</td><td>\" + \"");
-      out.print( dateRs.getDate("Date_Time") );
-      out.write("\" + \"</td><td>\" \n");
-      out.write("            + \"");
-      out.print( dateRs.getString("Location") );
-      out.write("\" + \"</td><td>\" + \"");
-      out.print( dateRs.getFloat("BookingFee") );
-      out.write("\" + \"</td><td>\" +\n");
-      out.write("            \"");
-      out.print( dateRs.getString("Comments") );
-      out.write("\" + \"</td><td>\" + \"");
-      out.print( dateRs.getInt("User1Rating") );
-      out.write("\" + \n");
-      out.write("            \"</td><td>\" + \"");
-      out.print( dateRs.getInt("User2Rating") );
-      out.write("\" + \"</td></tr>\");\n");
-      out.write("            ");
- }
-      out.write("   \n");
-      out.write("        }\n");
+      out.write("      \n");
+      out.write("      \n");
+      out.write("       \n");
       out.write("        function hideTable(){\n");
       out.write("        $(\"#mainTable\").hide();\n");
       out.write("        }\n");
       out.write("        function showTable(){\n");
       out.write("        $(\"#mainTable\").show();\n");
       out.write("        }\n");
-      out.write("        function submitDate(){\n");
-      out.write("            \n");
-      out.write("        }\n");
+      out.write("      \n");
       out.write("        \n");
       out.write("        </script>\n");
       out.write("<!--    <script src=\"../../dist/js/bootstrap.min.js\"></script>\n");

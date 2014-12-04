@@ -56,9 +56,9 @@
           <ul class="nav nav-sidebar">
             <li class="active"><a href="CustRep.jsp">Home <span class="sr-only">(current)</span></a></li>
             <li onclick="recordDate();"><a href="#">Record a Date</a></li>
-            <li><a onclick="showAEDEmp();" href="#" >Add, Edit, Delete Customer </a></li>
+            <li><a onclick="editCustomer();" href="#" >Add, Edit, Delete Customer </a></li>
             <li onclick="showCustRevByDate();"><a href="#">Produce Customer Mailing Lists</a></li>
-            
+          
             
           </ul>
         </div>
@@ -193,7 +193,7 @@
             $("#activeUser").addClass("hidden");
         }
         
-        function showAEDEmp(){
+        function editCustomer(){
             hideTable();
             hideRecordDate()
             hideActiveCust();
@@ -208,6 +208,14 @@
           function hideRecordDate(){
             $("#title").html("");
             $("#recordDate").addClass('hidden');
+        }
+        function showSalesReport(){
+            hideTable();
+            hideActiveCust();
+            hideRecordDate()
+            hideAEDEmp();
+            $("#title").html("Record a Date");
+            $("#salesReport").removeClass('hidden');
         }
         function recordDate(){
             hideTable();
@@ -254,101 +262,23 @@
             <% }%>   
         }
         
-        function showEmp(){ 
-            showTable();
-            hideAEDEmp();
-            hideActiveCust();
-            hideSalesReport();
-            <%
-            String getEmpQuery = "SELECT * FROM Employee";
-                java.sql.ResultSet empRs = DBConnection.ExecQuery(getEmpQuery);
-                
-                String getEmpColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Employee';";
-                java.sql.ResultSet empColRs = DBConnection.ExecQuery(getEmpColQuery);
-            %>
-            $("#mainTable thead").html("");
-            $("#mainTable tbody").html("");
-            $(".sub-header").html("Employee Table");
-            $("#mainTable thead").append("<tr>");
-            <% while(empColRs.next()){ %>
-               $("#mainTable thead").append("<th>" + "<%= empColRs.getString("COLUMN_NAME") %>" + "</th>");
-            <% } %>
-                $("#mainTable thead").append("</tr>");
-            <% while(empRs.next()){ %>    
-                $("#mainTable tbody").append("<tr><td>" + "<%= empRs.getString("SSN") %>" + "</td><td>"+"<%= empRs.getString("Role") %>"
-            +"</td><td>" + "<%= empRs.getDate("StartDate") %>"+"</td><td>" + "<%= empRs.getInt("HourlyRate") %>" + "</td></tr>");
-            <% }%>   
-        }
-        function showUser(){
-            showTable();
-            hideAEDEmp();
-            hideActiveCust();
-            hideSalesReport();
-            $("thead").html("");
-            $("tbody").html("");
-            <%
-             String getUserQuery = "SELECT * FROM User";
-                java.sql.ResultSet userRs = DBConnection.ExecQuery(getUserQuery);
-                
-                String getUserColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='User';";
-                java.sql.ResultSet userColRs = DBConnection.ExecQuery(getUserColQuery);
-            %>
-            $(".sub-header").html("User Table");
-            $("thead").append("<tr>");
-            <% while(userColRs.next()){ %>
-                $("thead").append("<th>" + "<%= userColRs.getString("COLUMN_NAME") %>" + "</th>");
-            <% } %>
-                $("thead").append("</tr>");
-            <% while(userRs.next()){ %>    
-                $("tbody").append("<tr><td>" + "<%= userRs.getString("SSN") %>" + "</td><td>"+"<%= userRs.getString("PPP") %>"
-            +"</td><td>" + "<%= userRs.getInt("Rating") %>"+"</td><td>" + "<%= userRs.getDate("DateOfLastAct") %>" + "</td></tr>");
-            <% }%>   
-        }
-        function showDate(){
-            showTable();
-            hideAEDEmp();
-            hideActiveCust();
-            hideSalesReport();
-            $("thead").html("");
-            $("tbody").html("");
-            <%
-            String getDateQuery = "SELECT * FROM Date";
-                java.sql.ResultSet dateRs = DBConnection.ExecQuery(getDateQuery);
-                
-                String getDateColQuery = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` "
-                        + "WHERE `TABLE_SCHEMA`='The_Expendables' AND `TABLE_NAME`='Date';";
-                java.sql.ResultSet dateColRs = DBConnection.ExecQuery(getDateColQuery);
-            %>
-            $(".sub-header").html("Dates Table");
-            $("thead").append("<tr>");
-            <% while(dateColRs.next()){ %>
-                $("thead").append("<th>" + "<%= dateColRs.getString("COLUMN_NAME") %>" + "</th>");
-            <% } %>
-                $("thead").append("</tr>");
-            <% while(dateRs.next()){ %>    
-                $("tbody").append("<tr><td>" + "<%= dateRs.getString("Profile1") %>" + "</td><td>"+"<%= dateRs.getString("Profile2") %>"
-            +"</td><td>" + "<%= dateRs.getString("CustRep") %>"+"</td><td>" + "<%= dateRs.getDate("Date_Time") %>" + "</td><td>" 
-            + "<%= dateRs.getString("Location") %>" + "</td><td>" + "<%= dateRs.getFloat("BookingFee") %>" + "</td><td>" +
-            "<%= dateRs.getString("Comments") %>" + "</td><td>" + "<%= dateRs.getInt("User1Rating") %>" + 
-            "</td><td>" + "<%= dateRs.getInt("User2Rating") %>" + "</td></tr>");
-            <% }%>   
-        }
+      
+      
+       
         function hideTable(){
         $("#mainTable").hide();
         }
         function showTable(){
         $("#mainTable").show();
         }
-        function submitDate(){
-            
-        }
+      
         
         </script>
 <!--    <script src="../../dist/js/bootstrap.min.js"></script>
     
-    
+    <script src="../../assets/js/docs.min.js"></script>-->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
     
   </body>
 </html>
