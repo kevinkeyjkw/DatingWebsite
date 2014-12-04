@@ -13,7 +13,7 @@
         <![endif]-->
         <link href="css/styles.css" rel="stylesheet">
     </head>
-    <body >
+    <body background="images/two.jpg">
         <!--login modal-->
         <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">

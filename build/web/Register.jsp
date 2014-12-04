@@ -12,9 +12,11 @@
         <title>Register User Page</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
     </head>
-    <body>
-        <h1>Register your account</h1>
-        <form class="form col-md-12 center-block" action="RegisterUser.jsp" method="post">
+    <body background="images/one.jpg">
+        
+        <div class="col-md-6 col-md-offset-3" >
+            <h1>Register your account</h1>
+        <form class="form  center-block " action="RegisterUser.jsp" method="post">
             <div class="form-group">
                 <input name="ssn" type="text" class="form-control input-lg" placeholder="SSN">
             </div>
@@ -78,7 +80,9 @@
             
             <div class="form-group">
               <button class="btn btn-primary btn-lg btn-block">Register</button>
+              <a  class="btn btn-default btn-lg btn-block" href="index.html">Back</a>
             </div>
         </form>
+        </div>
     </body>
 </html>

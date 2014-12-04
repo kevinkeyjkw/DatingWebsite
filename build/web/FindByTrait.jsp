@@ -10,8 +10,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <style>
+        body {
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+</style>
     </head>
-    <body>
+    <body background="images/five.jpg">
         <h1>Find by age, height, weight, hair color, hobbies</h1>
         <input type="text" placeholder="Enter Traits" name="trait" id="trait" > 
         

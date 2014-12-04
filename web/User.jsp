@@ -48,11 +48,11 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="User.jsp?ProfileID=<%=id%>" id="emp"  >My Profile</a></li>
                         <li><a href="SelectProfile.jsp" >Change Profile</a></li>
-                        <li><a href="index.jsp">Logout</a></li>
+                        <li><a href="index.html">Logout</a></li>
                     </ul>
-                    <form class="navbar-form navbar-right">
+<!--                    <form class="navbar-form navbar-right">
                         <input type="text" class="form-control" placeholder="Search...">
-                    </form>
+                    </form>-->
                 </div>
             </div>
         </nav>
@@ -71,7 +71,7 @@
                         <li onclick="showActiveButtons();"><a href="#">Most Active</a></li>
                         <li onclick="highRateProfile();hideActiveButtons();"><a href="#">Most Highly Rated</a></li>
                         <li onclick="popGeo();hideActiveButtons();"><a href="#">Popular Geo-Date Location</a></li>
-                        <li onclick="showDateSuggestions();hideActiveButtons();"><a href="#">Date Suggestion</a></li>
+                        <li onclick="personalizedList();hideActiveButtons();"><a href="#">Date Suggestion</a></li>
                         <li onclick="suggestGeoDates();"><a href="#">Geo Date</a></li>
                     </ul>
                     
@@ -485,6 +485,68 @@
             });
             
         }
+        function personalizedList() {
+        <%
+        String userProfileQuery = "SELECT * FROM Profile WHERE ProfileID='"+id+"'";
+                                        java.sql.ResultSet urs=DBConnection.ExecQuery(userProfileQuery);
+                                        String hobbiesst=null;
+                                        String [] hobbies=new String[10];
+                                        int start=0;
+                                        int end=0;
+                                        
+                                        if (urs.next()){
+                                            String hobbiesstr=urs.getString("hobbies");
+                                            hobbies=hobbiesstr.split(", ");
+                                            start=urs.getInt("DatingAgeRangeStart");
+                                            end=urs.getInt("DatingAgeRangeEnd");
+                                            urs=DBConnection.ExecQuery(userProfileQuery);
+                                        }
+                                        String upQuery="(SELECT * FROM Profile WHERE hobbies like '%"+hobbies[0]+"%' AND Age<='"+end+"' AND age>='"+start+"' AND ProfileID!='"+id+"')";
+                                        
+                                        int i=1;
+                                        while (i<hobbies.length){
+                                            upQuery=upQuery+" union (SELECT * FROM Profile WHERE hobbies like '%"+hobbies[i]+"%' AND Age<='"+end+"' AND age>='"+start+"' AND ProfileID!='"+id+"')";
+                                            i++;
+                                        }
+                                        java.sql.ResultSet uprs=DBConnection.ExecQuery(upQuery);
+        %>
+                                showTable();
+                                $("thead").html("");
+                                $("tbody").html("");
+                                $(".sub-header").html("Suggestion Table");
+                                $("thead").append("<tr>");
+                                $("thead").append("<th>ProfileID</th>" +
+                                                  "<th>Age</th>" +
+                                                  "<th>DatingAgeRangeStart</th>"+ 
+                                                  "<th>DatingAgeRangeEnd</th>"+
+                                                  "<th>DatingGeoRange</th>"+
+                                                  "<th>M_F</th>"+
+                                                  "<th>Hobbies</th>"+
+                                                  "<th>Height</th>"+
+                                                  "<th>Weight</th>"+
+                                                  "<th>HairColor</th>"+
+                                                  "<th>Operation</th>");
+                                $("thead").append("</tr>");
+                                <%
+                                
+                                while (uprs.next()){%>
+                                    $("tbody").append("<tr>");
+                                    $("tbody").append("<td><a href=\"ProfileInfo.jsp?ProfileID=<%=uprs.getString(1)%>\">"+"<%=uprs.getString(1)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getInt(3)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getInt(4)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getInt(5)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getInt(6)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getString(7)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getString(8)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getDouble(9)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getInt(10)%>"+"</td>"+
+                                                      "<td>"+"<%=uprs.getString(11)%>"+"</td>");
+                                    $("tbody").append("<input type=button onclick=\"javascrip:window.open('DateForm.jsp?datee=<%=uprs.getString(1)%>&dater=<%=id%>','_self');return;\" value=\"Date\">");
+                                    $("tbody").append("<input type=button onclick=\"javascrip:window.open('LikeProfile.jsp?likee=<%=uprs.getString(1)%>&liker=<%=id%>','_self');return;\" value=\"Like\">");
+                                    $("tbody").append("</tr");
+                                <%}
+                                %>
+                            }
     </script>
         
         

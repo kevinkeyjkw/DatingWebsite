@@ -14,6 +14,7 @@
         <title>JSP Page</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
     </head>
+    
     <body>
         <h1>Edit Employee</h1>
         
@@ -49,11 +50,12 @@
                     </tr>
                 </tbody>
            </table>
-            <button type="button" class="btn btn-default col-sm-3">Update Employee Info</button>
+            <button type="button" class="btn btn-primary col-sm-3">Update Employee Info</button>
             
             </div>
             <span id="responseMsg"></span>
         </div>
+        <a  class="btn btn-default col-sm-3" href="Manager.jsp">Back</a>
         
         
         

@@ -50,8 +50,14 @@ public final class AddEmp_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">\n");
       out.write("        <title>JSP Page</title>\n");
+      out.write("        <style>\n");
+      out.write("        body {\n");
+      out.write("            background-repeat: no-repeat;\n");
+      out.write("            background-size: cover;\n");
+      out.write("        }\n");
+      out.write("        </style>\n");
       out.write("    </head>\n");
-      out.write("    <body>\n");
+      out.write("    <body background=\"images/one.jpg\">\n");
       out.write("        <h1>Add Employee</h1>\n");
       out.write("        <form  role=\"form\" method=\"POST\" action=\"processAddEmp.jsp\" id=\"form1\">\n");
       out.write("            <div class=\"form-group form-group-sm col-sm-6 col-md-offset-3\">\n");

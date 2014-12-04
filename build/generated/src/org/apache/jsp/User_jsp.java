@@ -82,8 +82,10 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <nav class=\"navbar navbar-inverse navbar-fixed-top\" role=\"navigation\">\n");
       out.write("            ");
 
+                
                 String id = (String) session.getAttribute("ProfileID");
                 String state= (String)session.getAttribute("state");
+                
             
       out.write("\n");
       out.write("            <div class=\"container-fluid\">\n");
@@ -94,7 +96,6 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        <span class=\"icon-bar\"></span>\n");
       out.write("                        <span class=\"icon-bar\"></span>\n");
       out.write("                    </button>\n");
-      out.write("                    <h1 id=\"title\">Default</h1>\n");
       out.write("                    <a class=\"navbar-brand\" href=\"#\">");
       out.print(id);
       out.write("</a>\n");
@@ -107,9 +108,9 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        <li><a href=\"SelectProfile.jsp\" >Change Profile</a></li>\n");
       out.write("                        <li><a href=\"index.jsp\">Logout</a></li>\n");
       out.write("                    </ul>\n");
-      out.write("                    <form class=\"navbar-form navbar-right\">\n");
+      out.write("<!--                    <form class=\"navbar-form navbar-right\">\n");
       out.write("                        <input type=\"text\" class=\"form-control\" placeholder=\"Search...\">\n");
-      out.write("                    </form>\n");
+      out.write("                    </form>-->\n");
       out.write("                </div>\n");
       out.write("            </div>\n");
       out.write("        </nav>\n");
@@ -128,7 +129,7 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        <li onclick=\"showActiveButtons();\"><a href=\"#\">Most Active</a></li>\n");
       out.write("                        <li onclick=\"highRateProfile();hideActiveButtons();\"><a href=\"#\">Most Highly Rated</a></li>\n");
       out.write("                        <li onclick=\"popGeo();hideActiveButtons();\"><a href=\"#\">Popular Geo-Date Location</a></li>\n");
-      out.write("                        <li onclick=\"showDateSuggestions();hideActiveButtons();\"><a href=\"#\">Date Suggestion</a></li>\n");
+      out.write("                        <li onclick=\"personalizedList();hideActiveButtons();\"><a href=\"#\">Date Suggestion</a></li>\n");
       out.write("                        <li onclick=\"suggestGeoDates();\"><a href=\"#\">Geo Date</a></li>\n");
       out.write("                    </ul>\n");
       out.write("                    \n");
@@ -168,6 +169,36 @@ public final class User_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <script href=\"js/bootstrap.min.js\" ></script>\n");
       out.write("        <script type=\"text/javascript\" language=\"javascript\">\n");
       out.write("                        $(document).ready(function(){\n");
+      out.write("                            ");
+
+                            
+                            String currentUserAddQuery = "SELECT P.Street,P.City,P.State,P.Zipcode"
+                        + " FROM Person P,Profile Pr"
+                        + " WHERE Pr.ProfileID='"+(String)session.getAttribute("ProfileID")+"' AND P.SSN=Pr.OwnerSSN";
+                            java.sql.ResultSet currentUserAddRs = DBConnection.ExecQuery(currentUserAddQuery);
+                            while(currentUserAddRs.next()){
+                            
+      out.write("\n");
+      out.write("                                    \n");
+      out.write("                               getIndividualCoordinate(\"");
+      out.print( currentUserAddRs.getString("Street") );
+      out.write("\" \n");
+      out.write("                                       + \"");
+      out.print( currentUserAddRs.getString("City") );
+      out.write("\" + \", \"\n");
+      out.write("                                       + \"");
+      out.print( currentUserAddRs.getString("State") );
+      out.write("\" + \" \" \n");
+      out.write("                                       + \"");
+      out.print( currentUserAddRs.getInt("Zipcode") );
+      out.write("\");\n");
+      out.write("                            ");
+    
+                            }
+                            
+                            
+      out.write("\n");
+      out.write("                                    \n");
       out.write("                            ");
 if (state!=null){ 
                                     if (state.equals("make")){
@@ -220,6 +251,7 @@ if (state!=null){
                                 String getLikesQuery = "SELECT L.Likee AS ProfileID, P.Age, P.DatingAgeRangeStart, P.DatingAgeRangeEnd, P.M_F, P.Hobbies, P.Height, P.Weight, P.HairColor, P.CreationDate, P.LastModDate"
                                         + " FROM Likes L, Profile P"
                                         + " WHERE L.Liker='" + id + "' AND P.ProfileID=L.Likee";
+                                
                                 java.sql.ResultSet suggestedProfilesRs=DBConnection.ExecQuery(getLikesQuery);
                                 
                         
@@ -665,7 +697,12 @@ if (state!=null){
       out.write("        geocoder = new google.maps.Geocoder();\n");
       out.write("        var coordinateArray = [];\n");
       out.write("        var userSSNs = [];\n");
+      out.write("        var currentUserGeo;\n");
+      out.write("        var counter = 0;\n");
       out.write("        function suggestGeoDates(){\n");
+      out.write("            userSSNs=[];\n");
+      out.write("            coordinateArray = [];\n");
+      out.write("            counter = 0;\n");
       out.write("            ");
 
             String selectUserAddress = "SELECT P.SSN,P.Street,P.City,P.State,P.Zipcode"
@@ -700,15 +737,18 @@ if (state!=null){
       out.write("\n");
       out.write("        }\n");
       out.write("        \n");
-      out.write("        var counter = 0;\n");
+      out.write("        function getIndividualCoordinate(address){\n");
+      out.write("            geocoder.geocode({address:address},function(results,status){\n");
+      out.write("                coord_obj = results[0].geometry.location;\n");
+      out.write("                currentUserGeo = [coord_obj.k,coord_obj.B];\n");
+      out.write("         \n");
+      out.write("            });\n");
+      out.write("        }\n");
       out.write("        function getCoordinates(address){\n");
-      out.write("            var coordinates;\n");
       out.write("            var coord_obj;\n");
       out.write("            geocoder.geocode({address:address},function(results,status){\n");
-      out.write("                \n");
       out.write("                coord_obj = results[0].geometry.location;\n");
-      out.write("                coordinates = [coord_obj.k,coord_obj.B];\n");
-      out.write("                coordinateArray.push(coordinates);\n");
+      out.write("                coordinateArray.push([coord_obj.k,coord_obj.B]);\n");
       out.write("                counter += 1;\n");
       out.write("                //alert(address+\"Coordinates\"+coordinates+\"counter\"+ counter+\"size\"+ ");
       out.print( addresses.size());
@@ -717,21 +757,132 @@ if (state!=null){
       out.print( addresses.size() );
       out.write("){\n");
       out.write("                    var n;\n");
-      out.write("                    var currentUserGeo = [40.911935,-73.133255];\n");
       out.write("                    var suggestedGeoUsersSSN = [];\n");
       out.write("                    for(n = 0;n < coordinateArray.length;n++){\n");
-      out.write("                        alert(\"Coordinates x:\"+coordinateArray[n][0]+\" y: \"+coordinateArray[n][1]);\n");
-      out.write("                        if(coordinateArray[n][0] >= currentUserGeo[0]-0.1 && coordinateArray[n][0] <= currentUserGeo[0]+0.1 \n");
-      out.write("                                && coordinateArray[n][1] >= currentUserGeo[1]-0.1 && coordinateArray[n][1] >= currentUserGeo[1]+0.1)\n");
+      out.write("                        //alert(\"Coordinates x:\"+coordinateArray[n][0]+\" y: \"+coordinateArray[n][1]);\n");
+      out.write("                        \n");
+      out.write("                        if(parseFloat(coordinateArray[n][0]) >= currentUserGeo[0]-0.1 && parseFloat(coordinateArray[n][0]) <= currentUserGeo[0]+0.1 \n");
+      out.write("                                && parseFloat(coordinateArray[n][1]) >= currentUserGeo[1]-0.1 && parseFloat(coordinateArray[n][1]) <= currentUserGeo[1]+0.1)\n");
       out.write("                        {\n");
       out.write("                            suggestedGeoUsersSSN.push(userSSNs[n]);\n");
+      out.write("                            \n");
       out.write("                        }\n");
       out.write("                        \n");
-      out.write("                    }\n");
-      out.write("                }\n");
+      out.write("                    }//end for\n");
+      out.write("                    $(\"thead\").html(\"\");\n");
+      out.write("                    $(\"tbody\").html(\"\");\n");
+      out.write("                    $(\".sub-header\").html(\"Suggested Geo Dates For You\");\n");
+      out.write("                    $(\"thead\").append(\"<tr><th>ProfileID</th><th>Age</th><th>City</th><th>DatingAgeRangeStart</th><th>DatingAgeRangeEnd</th><th>DatinGeoRange</th><th>M_F</th><th>Hobbies</th><th>Height</th><th>Weight</th><th>HairColor</th><th>CreationDate</th><th>LastModDate</th></tr>\");\n");
+      out.write("                    \n");
+      out.write("                    suggestedGeoUsersSSN.forEach(function(entry){\n");
+      out.write("                         $.get('RetrieveProfileBySSN',{ssn:entry})\n");
+      out.write("                            .done(function(responseText){\n");
+      out.write("                            $(\"tbody\").append(responseText);\n");
+      out.write("                        });\n");
+      out.write("                    });\n");
+      out.write("                    \n");
+      out.write("                }//end if\n");
       out.write("            });\n");
       out.write("            \n");
       out.write("        }\n");
+      out.write("        function personalizedList() {\n");
+      out.write("        ");
+
+        String userProfileQuery = "SELECT * FROM Profile WHERE ProfileID='"+id+"'";
+                                        java.sql.ResultSet urs=DBConnection.ExecQuery(userProfileQuery);
+                                        String hobbiesst=null;
+                                        String [] hobbies=new String[10];
+                                        int start=0;
+                                        int end=0;
+                                        
+                                        if (urs.next()){
+                                            String hobbiesstr=urs.getString("hobbies");
+                                            hobbies=hobbiesstr.split(", ");
+                                            start=urs.getInt("DatingAgeRangeStart");
+                                            end=urs.getInt("DatingAgeRangeEnd");
+                                            urs=DBConnection.ExecQuery(userProfileQuery);
+                                        }
+                                        String upQuery="(SELECT * FROM Profile WHERE hobbies like '%"+hobbies[0]+"%' AND Age<='"+end+"' AND age>='"+start+"' AND ProfileID!='"+id+"')";
+                                        
+                                        int i=1;
+                                        while (i<hobbies.length){
+                                            upQuery=upQuery+" union (SELECT * FROM Profile WHERE hobbies like '%"+hobbies[i]+"%' AND Age<='"+end+"' AND age>='"+start+"' AND ProfileID!='"+id+"')";
+                                            i++;
+                                        }
+                                        java.sql.ResultSet uprs=DBConnection.ExecQuery(upQuery);
+        
+      out.write("\n");
+      out.write("                                showTable();\n");
+      out.write("                                $(\"thead\").html(\"\");\n");
+      out.write("                                $(\"tbody\").html(\"\");\n");
+      out.write("                                $(\".sub-header\").html(\"Suggestion Table\");\n");
+      out.write("                                $(\"thead\").append(\"<tr>\");\n");
+      out.write("                                $(\"thead\").append(\"<th>ProfileID</th>\" +\n");
+      out.write("                                                  \"<th>Age</th>\" +\n");
+      out.write("                                                  \"<th>DatingAgeRangeStart</th>\"+ \n");
+      out.write("                                                  \"<th>DatingAgeRangeEnd</th>\"+\n");
+      out.write("                                                  \"<th>DatingGeoRange</th>\"+\n");
+      out.write("                                                  \"<th>M_F</th>\"+\n");
+      out.write("                                                  \"<th>Hobbies</th>\"+\n");
+      out.write("                                                  \"<th>Height</th>\"+\n");
+      out.write("                                                  \"<th>Weight</th>\"+\n");
+      out.write("                                                  \"<th>HairColor</th>\"+\n");
+      out.write("                                                  \"<th>Operation</th>\");\n");
+      out.write("                                $(\"thead\").append(\"</tr>\");\n");
+      out.write("                                ");
+
+                                
+                                while (uprs.next()){
+      out.write("\n");
+      out.write("                                    $(\"tbody\").append(\"<tr>\");\n");
+      out.write("                                    $(\"tbody\").append(\"<td><a href=\\\"ProfileInfo.jsp?ProfileID=");
+      out.print(uprs.getString(1));
+      out.write("\\\">\"+\"");
+      out.print(uprs.getString(1));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getInt(3));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getInt(4));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getInt(5));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getInt(6));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getString(7));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getString(8));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getDouble(9));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getInt(10));
+      out.write("\"+\"</td>\"+\n");
+      out.write("                                                      \"<td>\"+\"");
+      out.print(uprs.getString(11));
+      out.write("\"+\"</td>\");\n");
+      out.write("                                    $(\"tbody\").append(\"<input type=button onclick=\\\"javascrip:window.open('DateForm.jsp?datee=");
+      out.print(uprs.getString(1));
+      out.write("&dater=");
+      out.print(id);
+      out.write("','_self');return;\\\" value=\\\"Date\\\">\");\n");
+      out.write("                                    $(\"tbody\").append(\"<input type=button onclick=\\\"javascrip:window.open('LikeProfile.jsp?likee=");
+      out.print(uprs.getString(1));
+      out.write("&liker=");
+      out.print(id);
+      out.write("','_self');return;\\\" value=\\\"Like\\\">\");\n");
+      out.write("                                    $(\"tbody\").append(\"</tr\");\n");
+      out.write("                                ");
+}
+                                
+      out.write("\n");
+      out.write("                            }\n");
       out.write("    </script>\n");
       out.write("        \n");
       out.write("        \n");

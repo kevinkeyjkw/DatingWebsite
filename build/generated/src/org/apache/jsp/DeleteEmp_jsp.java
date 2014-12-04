@@ -57,7 +57,8 @@ public final class DeleteEmp_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <title>JSP Page</title>\n");
       out.write("        <link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">\n");
       out.write("    </head>\n");
-      out.write("    <body>\n");
+      out.write("    \n");
+      out.write("        <body>\n");
       out.write("        <h1>Delete Employee</h1>\n");
       out.write("        \n");
       out.write("        <input type=\"text\" placeholder=\"Enter Employee's SSN\" name=\"SSN\" id=\"SSN\" > \n");
@@ -69,14 +70,11 @@ public final class DeleteEmp_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                    <table class=\"table table-striped col-sm-12\">\n");
       out.write("                        \n");
       out.write("                    </table>\n");
-      out.write("                   \n");
       out.write("                </div>\n");
-      out.write("             \n");
       out.write("            </div>\n");
-      out.write("            \n");
       out.write("        </div>\n");
-      out.write("        <button type=\"button\" class=\"btn btn-default\">Delete</button>\n");
-      out.write("        \n");
+      out.write("        <button type=\"button\" class=\"btn btn-primary col-sm-2\">Delete</button>\n");
+      out.write("        <a  class=\"btn btn-default col-sm-2\" href=\"Manager.jsp\">Back</a>\n");
       out.write("        \n");
       out.write("    <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js\"></script>\n");
       out.write("    <script href=\"js/bootstrap.min.js\" ></script>\n");

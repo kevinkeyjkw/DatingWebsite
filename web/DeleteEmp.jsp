@@ -15,7 +15,8 @@
         <title>JSP Page</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
     </head>
-    <body>
+    
+        <body>
         <h1>Delete Employee</h1>
         
         <input type="text" placeholder="Enter Employee's SSN" name="SSN" id="SSN" > 
@@ -27,14 +28,11 @@
                     <table class="table table-striped col-sm-12">
                         
                     </table>
-                   
                 </div>
-             
             </div>
-            
         </div>
-        <button type="button" class="btn btn-default">Delete</button>
-        
+        <button type="button" class="btn btn-primary col-sm-2">Delete</button>
+        <a  class="btn btn-default col-sm-2" href="Manager.jsp">Back</a>
         
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script href="js/bootstrap.min.js" ></script>

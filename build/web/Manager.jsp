@@ -42,11 +42,9 @@
             <li><a href="#" id="emp" onclick="showEmp();" >Employee</a></li>
             <li><a href="#" onclick="showUser();" >User</a></li>
             <li><a  href="Date.jsp" >Date</a></li>
-            <li><a href="index.jsp">Logout</a></li>
+            <li><a href="index.html">Logout</a></li>
           </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
+          
         </div>
       </div>
     </nav>

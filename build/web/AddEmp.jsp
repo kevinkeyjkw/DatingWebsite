@@ -11,8 +11,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <title>JSP Page</title>
+        <style>
+        
+        </style>
     </head>
     <body>
+        <div class="col-md-6 col-md-offset-3" >
         <h1>Add Employee</h1>
         <form  role="form" method="POST" action="processAddEmp.jsp" id="form1">
             <div class="form-group form-group-sm col-sm-6 col-md-offset-3">
@@ -67,8 +71,12 @@
                 <label for="Telephone">Telephone</label>
                 <input type="text" class="form-control" name="Telephone" id="Telephone" placeholder="Telephone">
             </div>
-            <button type="submit" class="btn btn-default col-sm-2 col-md-offset-5">Submit</button>
+            <div class="form-group">
+            <button type="submit" class="btn btn-primary col-sm-4 col-md-offset-4">Submit</button>
+            <a  class="btn btn-default col-sm-4 col-md-offset-4" href="Manager.jsp">Back</a>
+            </div>
         </form>
+    </div>
         
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

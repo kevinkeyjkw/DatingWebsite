@@ -11,22 +11,26 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
+        
     </head>
     <body>
+        
         <h1>Find dates by calendar date or customer SSN</h1>
         <input type="text" placeholder="Enter date or customer SSN" name="dateOrSSN" id="dateOrSSN" > 
         <div id="date"> 
             <div id="mainTable">
             <h2 class="sub-header"></h2>
-                <div class="table-responsive col-sm-6" >
-                    <table class="table table-striped col-sm-8">
+<!--                <div class="table-responsive col-sm-6" >
+                    <table class="table table-striped col-sm-8">-->
+<div class="table-responsive col-sm-12" >
+                    <table class="table table-striped col-sm-12">
                         
                     </table>
-                   
                 </div>
-             
             </div>
         </div>
+        <a  class="btn btn-default col-md-2" href="Manager.jsp">Back</a>
+        
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script href="js/bootstrap.min.js" ></script>
